@@ -26,10 +26,9 @@ qt_add_qml_module(applabPowersupplyGUI
     QML_FILES
         Main.qml
         SOURCES psu.h psu.cpp
-        SOURCES utils.h
-        SOURCES utils.cpp
+        SOURCES utils.h utils.cpp
         RESOURCES LICENSE.txt
-        RESOURCES REDME.md
+        RESOURCES README.md
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

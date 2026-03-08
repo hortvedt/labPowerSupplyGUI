@@ -3,6 +3,9 @@ A way to use Velleman LABPS3005DN, Tekpower TP3005P and maybe other usb-controll
 
 This is a c++ implementation and GUI continuation of my previous work with this PSU.
 
+## Dependencies
+* gbionics/serial_cpp - https://github.com/gbionics/serial_cpp
+
 ### Resorces
 * https://github.com/sayboltm/TP3005P - Expanded with batterycharging
 * https://github.com/Ekidna/Python_PS3005D - For the old Velleman PS3005D
