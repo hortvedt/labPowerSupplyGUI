@@ -5,17 +5,17 @@
 namespace psu::utils
 {
 
-    auto voltageToFixedWidthString( double a_voltage ) -> std::string
+    auto voltageToFixedWidthString( volt a_voltage ) -> std::string
     {
         return std::format( "{:05.2f}", a_voltage );
     }
 
-    auto currentToFixedWidthString( double a_current ) -> std::string
+    auto currentToFixedWidthString( ampere a_current ) -> std::string
     {
         return std::format( "{:05.3f}", a_current );
     }
 
-    void validateVoltageValue( double a_voltage )
+    void validateVoltageValue( volt a_voltage )
     {
         if ( a_voltage > 30 )
         {
@@ -28,7 +28,7 @@ namespace psu::utils
         }
     }
 
-    void validateCurrentValue( double a_current )
+    void validateCurrentValue( ampere a_current )
     {
         if ( a_current > 5 )
         {

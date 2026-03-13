@@ -1,14 +1,15 @@
 #pragma once
 
 #include <string>
+#include <unitdefinitions.h>
 
 namespace psu::utils
 {
-auto voltageToFixedWidthString( double a_voltage ) -> std::string;
-auto currentToFixedWidthString( double a_voltage ) -> std::string;
+    auto voltageToFixedWidthString( volt a_voltage ) -> std::string;
+    auto currentToFixedWidthString( ampere a_current ) -> std::string;
 
-void validateVoltageValue( double a_voltage );
-void validateCurrentValue( double a_current );
-// TODO: add the csv stuff
+    void validateVoltageValue( volt a_voltage );
+    void validateCurrentValue( ampere a_current );
+    // TODO: add the csv stuff
 
 } // namespace psu::utils

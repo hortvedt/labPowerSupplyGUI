@@ -1,6 +1,7 @@
 #pragma once
 
 #include <serial_cpp/serial.h>
+#include <unitdefinitions.h>
 
 namespace psu
 {
@@ -17,6 +18,8 @@ namespace psu
     constexpr std::string IDENTIFICATION = "*IDN?";
 
     using time = double;
+    using volt = double;
+    using ampere = double;
 
     class Psu
     {
@@ -27,22 +30,21 @@ namespace psu
                       time a_serialWaitTime = 0.05 );
 
         void closeSerial();
-        void sleep( uint a_time );
-        void writeSerial( const std::string& a_command );
-        void setVoltage( double a_voltage ); // vset
-        void setCurrent( double a_current ); // iset
+        void openSerial();
+        void setVoltage( volt a_voltage );   // vset
+        void setCurrent( ampere a_current ); // iset
         void turnOutputOn();
         void turnOutputOff();
-        auto getSetVoltage() -> double;
-        auto getSetCurrent() -> double;
+        auto getSetVoltage() -> volt;
+        auto getSetCurrent() -> ampere;
         auto getStatus() -> std::string;         // should this return or just fetch the new value
         auto getIdentification() -> std::string; // should this return or just fetch the new value
         void updateStatus();
-        auto voltage() -> double;
-        auto current() -> double;
-        auto measureVoltage( double a_safeVoltage = 5,
+        auto voltage() -> volt;
+        auto current() -> ampere;
+        auto measureVoltage( volt a_safeVoltage = 5,
                              time a_waitForMeasurement = 0.5,
-                             double a_checkingCurrent = 0 ) -> double;
+                             ampere a_checkingCurrent = 0 ) -> double;
 
         void setVerbose( bool a_verbose );
 
@@ -50,14 +52,21 @@ namespace psu
 
     private: // methods
         // TODO Fint out what can be private
+        void sleep( uint a_time );
+        void writeSerial( const std::string& a_command );
+
     private: // members
-        // byte vectors
-        std::string m_status;     // might not be kept, just use the flags instead
-        std::string m_setVoltage; // setV, might not be kept
-        std::string m_setCurrent; // setI, might not be kept
-        std::string m_identification;
-        std::string m_current;
-        std::string m_voltage;
+        // Strings
+        std::string m_statusString;     // might not be kept, just use the flags instead
+        std::string m_setVoltageString; // setV, might not be kept
+        std::string m_setCurrentString; // setI, might not be kept
+        std::string m_identificationString;
+        std::string m_currentString;
+        std::string m_voltageString;
+
+        // Values
+        volt m_setVoltage;
+        ampere m_setCurrent;
 
         // Status flags
         bool m_currentLimited = false; // cv, Current or voltage limited?

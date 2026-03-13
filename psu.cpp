@@ -22,6 +22,11 @@ namespace psu {
         m_serial.close();
     }
 
+    void Psu::openSerial()
+    {
+        m_serial.open();
+    }
+
     void Psu::sleep( uint a_millisecondTime )
     {
 #ifdef _WIN32
@@ -38,19 +43,21 @@ namespace psu {
         sleep( m_serialWaitTime );
     }
 
-    void Psu::setVoltage( double a_voltage )
+    void Psu::setVoltage( volt a_voltage )
     {
         utils::validateVoltageValue( a_voltage );
         std::string voltageString { SET_VOLTAGE };
         voltageString += utils::voltageToFixedWidthString( a_voltage );
         writeSerial( voltageString );
+        m_setVoltage = a_voltage;
         updateStatus();
     }
-    void Psu::setCurrent( double a_current )
+    void Psu::setCurrent( ampere a_current )
     {
         utils::validateCurrentValue( a_current );
         std::string currentString { SET_CURRENT };
         currentString += utils::currentToFixedWidthString( a_current );
+        m_setCurrent = a_current;
         updateStatus();
     }
 
@@ -66,60 +73,84 @@ namespace psu {
         updateStatus();
     }
 
-    auto Psu::getSetVoltage() -> double
+    auto Psu::getSetVoltage() -> volt
     {
-        m_setVoltage.clear();
+        m_setVoltageString.clear();
         writeSerial( VOLTAGE_SET );
-        m_serial.readline( m_setVoltage );
-        return std::stod( m_setVoltage );
+        m_serial.readline( m_setVoltageString );
+        return std::stod( m_setVoltageString );
     }
 
-    auto Psu::getSetCurrent() -> double
+    auto Psu::getSetCurrent() -> ampere
     {
-        m_setCurrent.clear();
+        m_setCurrentString.clear();
         writeSerial( CURRENT_SET );
-        m_serial.readline( m_setCurrent );
-        return std::stod( m_setCurrent );
+        m_serial.readline( m_setCurrentString );
+        return std::stod( m_setCurrentString );
     }
 
     auto Psu::getStatus() -> std::string
     {
-        m_status.clear();
-        writeSerial( VOLTAGE_SET );
-        m_serial.readline( m_status );
+        m_statusString.clear();
+        writeSerial( STATUS );
+        m_serial.readline( m_statusString );
         // TODO should probably check that it returns size 3.
-        return m_status;
+        return m_statusString;
     }
 
     void Psu::updateStatus()
     {
         getStatus();
 
-        m_currentLimited = m_status.at( 0 ) == '1';
-        m_outputOn = m_status.at( 1 ) == '1';
-        m_ocp = m_status.at( 2 ) == '1';
+        m_currentLimited = m_statusString.at( 0 ) == '1';
+        m_outputOn = m_statusString.at( 1 ) == '1';
+        m_ocp = m_statusString.at( 2 ) == '1';
 
         // TODO add the verbose part
     }
 
-    auto Psu::voltage() -> double
+    auto Psu::voltage() -> volt
     {
-        m_voltage.clear();
+        m_voltageString.clear();
         writeSerial( CURRENT_OUTPUT );
-        m_serial.readline( m_voltage );
-        return std::stod( m_voltage );
+        m_serial.readline( m_voltageString );
+        return std::stod( m_voltageString );
     }
 
-    auto Psu::current() -> double
+    auto Psu::current() -> ampere
     {
-        return {};
+        m_currentString.clear();
+        writeSerial( CURRENT_OUTPUT );
+        m_serial.readline( m_currentString );
+        return std::stod( m_currentString );
     }
 
-    auto Psu::measureVoltage( double a_safeVoltage,
+    auto Psu::measureVoltage( volt a_safeVoltage,
                               time a_waitForMeasurement,
-                              double a_checkingCurrent ) -> double
+                              ampere a_checkingCurrent ) -> volt
     {
-        return {};
+        bool outputOnBeforeMeasurement { m_outputOn };
+        volt setVoltageBeforeMeasurement { m_setVoltage };
+        ampere setCurrentBeforeMeasurement { m_setCurrent };
+
+        setCurrent( a_checkingCurrent );
+        setVoltage( a_safeVoltage );
+        if ( not outputOnBeforeMeasurement )
+        {
+            turnOutputOn();
+        }
+        sleep( a_waitForMeasurement );
+
+        volt batteryVoltage { voltage() };
+
+        if ( not outputOnBeforeMeasurement )
+        {
+            turnOutputOff();
+        }
+        setVoltage( setVoltageBeforeMeasurement );
+        setCurrent( setCurrentBeforeMeasurement );
+
+        return batteryVoltage;
     }
 
     void Psu::setVerbose( bool a_verbose )
@@ -129,10 +160,10 @@ namespace psu {
 
     auto Psu::getIdentification() -> std::string
     {
-        m_identification.clear();
+        m_identificationString.clear();
         writeSerial( IDENTIFICATION );
-        m_serial.readline( m_identification );
-        return m_identification;
+        m_serial.readline( m_identificationString );
+        return m_identificationString;
     }
 
 } // namespace psu

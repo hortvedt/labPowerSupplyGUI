@@ -1,8 +1,25 @@
 import QtQuick
+import QtQuick.Controls
 
-Window {
+ApplicationWindow {
     width: 640
     height: 480
     visible: true
-    title: qsTr("Hello World")
+    title: ("Lab Power Supply GUI")
+
+    menuBar: AppMenuBar{}
+    header: AppTabBar{}
+
+    StackView {
+        id: stack
+        anchors.fill: parent
+        initialItem: filler
+    }
+
+    Component {
+        id: filler
+        Label {
+            text: "Hei"
+        }
+    }
 }
