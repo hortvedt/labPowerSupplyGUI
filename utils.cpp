@@ -40,4 +40,19 @@ namespace psu::utils
             throw std::out_of_range( "Set voltage is negative." );
         }
     }
+
+    void milliSleep( unsigned int a_millisecondTime )
+    {
+#ifdef _WIN32
+        Sleep( a_millisecondTime );
+#else
+        usleep( a_millisecondTime * 1000 );
+#endif
+    }
+
+    void secondSleep( second a_secondTime )
+    {
+        milliSleep( static_cast< unsigned int >( a_secondTime * 1000 ) );
+    }
+
 } // namespace psu::utils

@@ -1,16 +1,10 @@
 #include <psu.h>
 
 #include <utils.h>
-// OS Specific sleep
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
 
 namespace psu {
 
-    Psu::Psu( const std::string& a_port, uint a_baudrate, time a_timeOut, time a_serialWaitTime )
+    Psu::Psu( const std::string& a_port, uint a_baudrate, second a_timeOut, second a_serialWaitTime )
         : m_serialWaitTime( a_serialWaitTime )
         , m_timeOutTime( a_timeOut )
         , m_serial( a_port, a_baudrate, m_timeOutTime )
@@ -27,13 +21,9 @@ namespace psu {
         m_serial.open();
     }
 
-    void Psu::sleep( uint a_millisecondTime )
+    void Psu::sleep( unsigned int a_millisecondTime )
     {
-#ifdef _WIN32
-        Sleep( a_millisecondTime );
-#else
-        usleep( a_millisecondTime * 1000 );
-#endif
+        utils::milliSleep( a_millisecondTime );
     }
 
     void Psu::writeSerial( const std::string& a_command )
@@ -45,6 +35,7 @@ namespace psu {
 
     void Psu::setVoltage( volt a_voltage )
     {
+        // TODO: Check if it already is set to the right value
         utils::validateVoltageValue( a_voltage );
         std::string voltageString { SET_VOLTAGE };
         voltageString += utils::voltageToFixedWidthString( a_voltage );
@@ -54,6 +45,7 @@ namespace psu {
     }
     void Psu::setCurrent( ampere a_current )
     {
+        // TODO: Check if it already is set to the right value
         utils::validateCurrentValue( a_current );
         std::string currentString { SET_CURRENT };
         currentString += utils::currentToFixedWidthString( a_current );
@@ -112,7 +104,7 @@ namespace psu {
     auto Psu::voltage() -> volt
     {
         m_voltageString.clear();
-        writeSerial( CURRENT_OUTPUT );
+        writeSerial( VOLTAGE_OUTPUT );
         m_serial.readline( m_voltageString );
         return std::stod( m_voltageString );
     }
@@ -126,7 +118,7 @@ namespace psu {
     }
 
     auto Psu::measureVoltage( volt a_safeVoltage,
-                              time a_waitForMeasurement,
+                              second a_waitForMeasurement,
                               ampere a_checkingCurrent ) -> volt
     {
         bool outputOnBeforeMeasurement { m_outputOn };

@@ -17,7 +17,7 @@ namespace psu
     constexpr std::string STATUS = "STATUS?";
     constexpr std::string IDENTIFICATION = "*IDN?";
 
-    using time = double;
+    using second = double;
     using volt = double;
     using ampere = double;
 
@@ -26,8 +26,8 @@ namespace psu
     public:
         explicit Psu( const std::string& a_port, // com
                       uint a_baudrate = 9600,
-                      time a_timeOut = 1,
-                      time a_serialWaitTime = 0.05 );
+                      second a_timeOut = 1,
+                      second a_serialWaitTime = 0.05 );
 
         void closeSerial();
         void openSerial();
@@ -43,7 +43,7 @@ namespace psu
         auto voltage() -> volt;
         auto current() -> ampere;
         auto measureVoltage( volt a_safeVoltage = 5,
-                             time a_waitForMeasurement = 0.5,
+                             second a_waitForMeasurement = 0.5,
                              ampere a_checkingCurrent = 0 ) -> double;
 
         void setVerbose( bool a_verbose );
@@ -73,7 +73,7 @@ namespace psu
         bool m_outputOn = false;       // on
         bool m_ocp = false;            // ocp, What is it?
 
-        time m_serialWaitTime;
+        second m_serialWaitTime;
         serial_cpp::Timeout m_timeOutTime;
 
         serial_cpp::Serial m_serial;
