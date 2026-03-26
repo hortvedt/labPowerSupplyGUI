@@ -21,6 +21,11 @@ namespace psu {
         m_serial.open();
     }
 
+    auto Psu::serialOpen() -> bool
+    {
+        return m_serial.isOpen();
+    }
+
     void Psu::sleep( unsigned int a_millisecondTime )
     {
         utils::milliSleep( a_millisecondTime );
@@ -30,7 +35,45 @@ namespace psu {
     {
         m_serial.write( a_command + ENDCHARS );
         m_serial.flushOutput();
-        sleep( m_serialWaitTime );
+        // Check if this is still needed. I dont know. I should not be in theory.
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds( static_cast< unsigned int >( m_serialWaitTime * 1000 ) ) );
+    }
+
+    auto Psu::measureVoltageAsync( volt a_safeVoltage,
+                                   second a_waitForMeasurement,
+                                   ampere a_checkingCurrent ) -> volt
+    {
+        bool outputOnBeforeMeasurement { m_outputOn };
+        volt setVoltageBeforeMeasurement { m_setVoltage };
+        ampere setCurrentBeforeMeasurement { m_setCurrent };
+
+        {
+            std::lock_guard< std::mutex > lock( m_mutex );
+            setCurrent( a_checkingCurrent );
+            setVoltage( a_safeVoltage );
+            if ( not outputOnBeforeMeasurement )
+            {
+                turnOutputOn();
+            }
+        }
+
+        std::this_thread::sleep_for( std::chrono::milliseconds(
+            static_cast< unsigned int >( a_waitForMeasurement * 1000 ) ) );
+
+        volt batteryVoltage;
+        {
+            std::lock_guard< std::mutex > lock( m_mutex );
+            batteryVoltage = voltage();
+            if ( not outputOnBeforeMeasurement )
+            {
+                turnOutputOff();
+            }
+            setVoltage( setVoltageBeforeMeasurement );
+            setCurrent( setCurrentBeforeMeasurement );
+        }
+
+        return batteryVoltage;
     }
 
     void Psu::setVoltage( volt a_voltage )
@@ -119,30 +162,14 @@ namespace psu {
 
     auto Psu::measureVoltage( volt a_safeVoltage,
                               second a_waitForMeasurement,
-                              ampere a_checkingCurrent ) -> volt
+                              ampere a_checkingCurrent ) -> std::future< volt >
     {
-        bool outputOnBeforeMeasurement { m_outputOn };
-        volt setVoltageBeforeMeasurement { m_setVoltage };
-        ampere setCurrentBeforeMeasurement { m_setCurrent };
-
-        setCurrent( a_checkingCurrent );
-        setVoltage( a_safeVoltage );
-        if ( not outputOnBeforeMeasurement )
-        {
-            turnOutputOn();
-        }
-        sleep( a_waitForMeasurement );
-
-        volt batteryVoltage { voltage() };
-
-        if ( not outputOnBeforeMeasurement )
-        {
-            turnOutputOff();
-        }
-        setVoltage( setVoltageBeforeMeasurement );
-        setCurrent( setCurrentBeforeMeasurement );
-
-        return batteryVoltage;
+        return std::async( std::launch::async,
+                           &Psu::measureVoltageAsync,
+                           this,
+                           a_safeVoltage,
+                           a_waitForMeasurement,
+                           a_checkingCurrent );
     }
 
     void Psu::setVerbose( bool a_verbose )

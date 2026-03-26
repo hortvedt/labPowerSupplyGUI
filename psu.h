@@ -1,7 +1,10 @@
 #pragma once
 
+#include <future>
 #include <serial_cpp/serial.h>
 #include <unitdefinitions.h>
+
+// Implement Queue-Based with Worker Thread
 
 namespace psu
 {
@@ -31,6 +34,7 @@ namespace psu
 
         void closeSerial();
         void openSerial();
+        auto serialOpen() -> bool;
         void setVoltage( volt a_voltage );   // vset
         void setCurrent( ampere a_current ); // iset
         void turnOutputOn();
@@ -44,7 +48,7 @@ namespace psu
         auto current() -> ampere;
         auto measureVoltage( volt a_safeVoltage = 5,
                              second a_waitForMeasurement = 0.5,
-                             ampere a_checkingCurrent = 0 ) -> double;
+                             ampere a_checkingCurrent = 0 ) -> std::future< volt >;
 
         void setVerbose( bool a_verbose );
 
@@ -54,8 +58,13 @@ namespace psu
         // TODO Fint out what can be private
         void sleep( uint a_time );
         void writeSerial( const std::string& a_command );
+        auto measureVoltageAsync( volt a_safeVoltage,
+                                  second a_waitForMeasurement,
+                                  ampere a_checkingCurrent ) -> volt;
 
     private: // members
+        std::mutex m_mutex;
+
         // Strings
         std::string m_statusString;     // might not be kept, just use the flags instead
         std::string m_setVoltageString; // setV, might not be kept

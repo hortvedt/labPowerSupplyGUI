@@ -12,32 +12,41 @@ namespace psu::bc
     {
     }
 
-    void BatteryCharger::unsafeCharge()
-    {
-        turnOffOutput();
-        if ( readyBeforeCharge() )
-        {
-            startCharging();
-
-            while ( chargeCheck() )
-            {
-                chargeLoop();
-            }
-
-            endCharging();
-        }
-    }
-
-    void BatteryCharger::charge()
+    void BatteryCharger::startCharging()
     {
         try
         {
-            unsafeCharge();
+            turnOffOutput();
+            if ( readyBeforeCharge() )
+            {
+                chargingStartup();
+
+                m_charging = true;
+                m_chargingThread = std::thread( &BatteryCharger::mainChargeLoop, this );
+
+                chargingEnding();
+            }
         }
         catch ( const std::exception& error )
         {
             turnOffOutput();
+            throw error;
         }
+    }
+
+    void BatteryCharger::endCharging()
+    {
+        m_charging = false;
+        turnOffOutput();
+        if ( m_chargingThread.joinable() )
+        {
+            m_chargingThread.join();
+        }
+    }
+
+    void BatteryCharger::startSerial()
+    {
+        m_psu.openSerial();
     }
 
     auto BatteryCharger::chargeCheck() -> bool
@@ -78,8 +87,9 @@ namespace psu::bc
 
     auto BatteryCharger::measureBatteryVoltage() -> volt
     {
-        m_batteryVoltage = m_psu.measureVoltage( m_voltageMax,
-                                                 m_waitTimeForBatteryVoltageMeasurements );
+        auto futureBatteryVoltage = m_psu.measureVoltage( m_voltageMax,
+                                                          m_waitTimeForBatteryVoltageMeasurements );
+        m_batteryVoltage = futureBatteryVoltage.get();
         return m_batteryVoltage;
     }
 
@@ -99,7 +109,7 @@ namespace psu::bc
         getSetCurrent();
     }
 
-    void BatteryCharger::end()
+    void BatteryCharger::endSerial()
     {
         m_psu.closeSerial();
     }
@@ -116,7 +126,7 @@ namespace psu::bc
         return m_current;
     }
 
-    void BatteryCharger::startCharging()
+    void BatteryCharger::chargingStartup()
     {
         turnOffOutput();
         setVoltage( m_voltageMax );
@@ -126,16 +136,25 @@ namespace psu::bc
         measureAndUpdateChargeMembers();
     }
 
-    void BatteryCharger::endCharging()
+    void BatteryCharger::chargingEnding()
     {
         turnOffOutput();
     }
 
-    void BatteryCharger::chargeLoop()
+    void BatteryCharger::mainChargeLoop()
     {
-        utils::secondSleep( m_waitTimeBetweenMeasurements );
-        measureAndUpdateChargeMembers();
-        setCurrent( m_socChargeCurrent.at( m_soc ) );
+        while ( m_charging && chargeCheck() )
+        {
+            std::this_thread::sleep_for( std::chrono::milliseconds(
+                static_cast< unsigned int >( m_waitTimeBetweenMeasurements * 1000 ) ) );
+
+            // Update in a thread-safe way
+            {
+                std::lock_guard< std::mutex > lock( m_mutex );
+                measureAndUpdateChargeMembers();
+                setCurrent( m_socChargeCurrent.at( m_soc ) );
+            }
+        }
     }
 
     void BatteryCharger::setChargeParams( volt a_voltageMax,

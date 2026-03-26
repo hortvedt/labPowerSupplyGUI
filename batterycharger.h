@@ -1,9 +1,11 @@
 #pragma once
 
 // #include <chrono>
+#include <atomic>
 #include <filesystem>
 #include <map>
 #include <psu.h>
+#include <thread>
 #include <unitdefinitions.h>
 #include <utils.h>
 
@@ -15,26 +17,15 @@ namespace psu::bc
     public:
         explicit BatteryCharger( Psu& a_psu );
 
-        void startSerial();
-        void settings();
-        void unsafeCharge();
-        void charge();
-        // void updateHistory(); // update_data
-        auto chargeCheck() -> bool;
-        void measureAndUpdateChargeMembers(); // Charge_update
-        void chargeSetupHighLevel();
-        void chargeSetupLowLevel();
-        auto readyBeforeCharge() -> bool;
-        // void makeCurrentParams(); // Now take in current params
-        auto measureBatteryVoltage() -> volt; // checkVoltage
-        void setVoltage( volt a_voltage );   // vset
-        void setCurrent( ampere a_current ); // iset
-        void end();
-        auto readVoltage() -> volt;
-        auto readCurrent() -> ampere;
         void startCharging();
         void endCharging();
-        void chargeLoop();
+        void measureAndUpdateChargeMembers(); // Charge_update
+        auto readyBeforeCharge() -> bool;
+        auto measureBatteryVoltage() -> volt; // checkVoltage
+        void startSerial();
+        void endSerial();
+        auto readVoltage() -> volt;
+        auto readCurrent() -> ampere;
 
         void resetCharging();
         void setChargeParams( volt a_voltageMax,
@@ -59,9 +50,23 @@ namespace psu::bc
         auto getSetVoltage() -> volt;
         auto getSetCurrent() -> ampere;
         auto batteryVoltagesValid() -> bool;
+        void setVoltage( volt a_voltage );   // vset
+        void setCurrent( ampere a_current ); // iset
+
+        void chargingStartup();
+        void mainChargeLoop();
+        auto chargeCheck() -> bool;
+        void chargingEnding();
+
+        void unsafeCharge();
 
     private: // members
         Psu& m_psu;
+
+        std::atomic< bool > m_charging { false };
+        std::thread m_chargingThread;
+
+        std::mutex m_mutex;
 
         volt m_setVoltage;
         ampere m_setCurrent;
