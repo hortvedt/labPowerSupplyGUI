@@ -1,6 +1,6 @@
 #include "bccontroller.h"
 
-namespace psu::bc
+namespace psu::mmi
 {
 
     BcController::BcController( QObject *parent )
@@ -8,4 +8,4 @@ namespace psu::bc
     {
     }
 
-} // namespace psu::bc
+} // namespace psu::mmi

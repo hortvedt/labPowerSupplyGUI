@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 ApplicationWindow {
     width: 640
@@ -9,11 +10,16 @@ ApplicationWindow {
 
     menuBar: AppMenuBar{}
     header: AppTabBar{}
+    // footer: AppToolBar{}
 
-    StackView {
+    StackLayout {
         id: stack
         anchors.fill: parent
-        initialItem: filler
+        currentIndex: 0
+
+        StandardTab {
+
+        }
     }
 
     Component {

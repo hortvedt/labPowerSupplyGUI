@@ -4,26 +4,21 @@
 
 namespace psu {
 
-    Psu::Psu( const std::string& a_port, uint a_baudrate, second a_timeOut, second a_serialWaitTime )
-        : m_serialWaitTime( a_serialWaitTime )
-        , m_timeOutTime( a_timeOut )
-        , m_serial( a_port, a_baudrate, m_timeOutTime )
-    {
-    }
+    Psu::Psu() {}
 
     void Psu::closeSerial()
     {
-        m_serial.close();
+        m_serial->close();
     }
 
     void Psu::openSerial()
     {
-        m_serial.open();
+        m_serial->open();
     }
 
     auto Psu::serialOpen() -> bool
     {
-        return m_serial.isOpen();
+        return m_serial->isOpen();
     }
 
     void Psu::sleep( unsigned int a_millisecondTime )
@@ -33,9 +28,9 @@ namespace psu {
 
     void Psu::writeSerial( const std::string& a_command )
     {
-        m_serial.write( a_command + ENDCHARS );
-        m_serial.flushOutput();
-        // Check if this is still needed. I dont know. I should not be in theory.
+        m_serial->write( a_command + ENDCHARS );
+        m_serial->flushOutput();
+        // Check if this is still needed. I dont know. It should not be in theory.
         std::this_thread::sleep_for(
             std::chrono::milliseconds( static_cast< unsigned int >( m_serialWaitTime * 1000 ) ) );
     }
@@ -112,7 +107,7 @@ namespace psu {
     {
         m_setVoltageString.clear();
         writeSerial( VOLTAGE_SET );
-        m_serial.readline( m_setVoltageString );
+        m_serial->readline( m_setVoltageString );
         return std::stod( m_setVoltageString );
     }
 
@@ -120,17 +115,32 @@ namespace psu {
     {
         m_setCurrentString.clear();
         writeSerial( CURRENT_SET );
-        m_serial.readline( m_setCurrentString );
+        m_serial->readline( m_setCurrentString );
         return std::stod( m_setCurrentString );
     }
 
-    auto Psu::getStatus() -> std::string
+    auto Psu::getStatus() -> std::string&
     {
         m_statusString.clear();
         writeSerial( STATUS );
-        m_serial.readline( m_statusString );
+        m_serial->readline( m_statusString );
         // TODO should probably check that it returns size 3.
         return m_statusString;
+    }
+
+    auto Psu::getCurrentLimited() -> bool
+    {
+        return m_currentLimited;
+    }
+
+    auto Psu::getVoltageLimited() -> bool
+    {
+        return m_ocp;
+    }
+
+    auto Psu::getoutputOn() -> bool
+    {
+        return m_outputOn;
     }
 
     void Psu::updateStatus()
@@ -148,7 +158,7 @@ namespace psu {
     {
         m_voltageString.clear();
         writeSerial( VOLTAGE_OUTPUT );
-        m_serial.readline( m_voltageString );
+        m_serial->readline( m_voltageString );
         return std::stod( m_voltageString );
     }
 
@@ -156,7 +166,7 @@ namespace psu {
     {
         m_currentString.clear();
         writeSerial( CURRENT_OUTPUT );
-        m_serial.readline( m_currentString );
+        m_serial->readline( m_currentString );
         return std::stod( m_currentString );
     }
 
@@ -177,11 +187,22 @@ namespace psu {
         m_verbose = a_verbose;
     }
 
-    auto Psu::getIdentification() -> std::string
+    void Psu::setSerial( serial_cpp::Serial* a_serial, second a_serialWaitTime )
+    {
+        m_serial = a_serial;
+        m_serialWaitTime = a_serialWaitTime;
+    }
+
+    auto Psu::isSerialSet() const -> bool
+    {
+        return ( m_serial != nullptr );
+    }
+
+    auto Psu::getIdentification() -> std::string&
     {
         m_identificationString.clear();
         writeSerial( IDENTIFICATION );
-        m_serial.readline( m_identificationString );
+        m_serial->readline( m_identificationString );
         return m_identificationString;
     }
 

@@ -2,10 +2,8 @@
 
 #include <QObject>
 
-namespace psu
+namespace psu::mmi
 {
-    namespace bc
-    {
 
         class BcController : public QObject
         {
@@ -16,5 +14,4 @@ namespace psu
         signals:
         };
 
-    } // namespace bc
 } // namespace psu

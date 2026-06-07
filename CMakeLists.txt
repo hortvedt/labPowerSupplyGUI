@@ -21,20 +21,25 @@ qt_add_executable(applabPowersupplyGUI
 qt_add_qml_module(applabPowersupplyGUI
     URI labPowersupplyGUI
     QML_FILES
-        Main.qml
         AppMenuBar.qml
-        AppToolBar.qml
         AppTabBar.qml
+        AppToolBar.qml
+        LedIndicator.qml
+        Main.qml
+        StandardTab.qml
     SOURCES
-        psu.h psu.cpp
-        utils.h utils.cpp
-        unitdefinitions.h
         batterycharger.h batterycharger.cpp
+        bccontroller.h bccontroller.cpp
+        csvcontroller.h csvcontroller.cpp
+        psu.h psu.cpp
+        psucontroller.h psucontroller.cpp
+        unitdefinitions.h
+        utils.h utils.cpp
     RESOURCES
         LICENSE.txt
         README.md
-        SOURCES psucontroller.h psucontroller.cpp
-        SOURCES bccontroller.h bccontroller.cpp
+        SOURCES singletonclass.h singletonclass.cpp
+        QML_FILES StatusLamp.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -62,9 +67,9 @@ target_link_libraries(applabPowersupplyGUI
 # Create a library with the core functionality to be tested
 # This avoids linking Qt and other dependencies if they're not needed for tests
 add_library(core_functionality STATIC
+    batterycharger.cpp
     psu.cpp
     utils.cpp
-    batterycharger.cpp
 )
 
 target_include_directories(core_functionality

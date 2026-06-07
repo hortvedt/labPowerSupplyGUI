@@ -15,7 +15,7 @@ namespace psu::bc
     class BatteryCharger
     {
     public:
-        explicit BatteryCharger( Psu& a_psu );
+        explicit BatteryCharger( Psu* a_psu );
 
         void startCharging();
         void endCharging();
@@ -61,7 +61,7 @@ namespace psu::bc
         void unsafeCharge();
 
     private: // members
-        Psu& m_psu;
+        Psu* m_psu;
 
         std::atomic< bool > m_charging { false };
         std::thread m_chargingThread;

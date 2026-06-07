@@ -5,6 +5,7 @@
 #include <unitdefinitions.h>
 
 // Implement Queue-Based with Worker Thread
+// Is unsafe, does not check for set serial interface
 
 namespace psu
 {
@@ -27,10 +28,7 @@ namespace psu
     class Psu
     {
     public:
-        explicit Psu( const std::string& a_port, // com
-                      uint a_baudrate = 9600,
-                      second a_timeOut = 1,
-                      second a_serialWaitTime = 0.05 );
+        explicit Psu();
 
         void closeSerial();
         void openSerial();
@@ -41,8 +39,11 @@ namespace psu
         void turnOutputOff();
         auto getSetVoltage() -> volt;
         auto getSetCurrent() -> ampere;
-        auto getStatus() -> std::string;         // should this return or just fetch the new value
-        auto getIdentification() -> std::string; // should this return or just fetch the new value
+        auto getStatus() -> std::string&; // should this return or just fetch the new value
+        auto getCurrentLimited() -> bool;
+        auto getVoltageLimited() -> bool;
+        auto getoutputOn() -> bool;
+        auto getIdentification() -> std::string&; // should this return or just fetch the new value
         void updateStatus();
         auto voltage() -> volt;
         auto current() -> ampere;
@@ -52,11 +53,12 @@ namespace psu
 
         void setVerbose( bool a_verbose );
 
-        // TODO: include the csv stuff
+        void setSerial( serial_cpp::Serial* a_serial, second a_serialWaitTime = 0.05 );
+        auto isSerialSet() const -> bool;
 
     private: // methods
         // TODO Fint out what can be private
-        void sleep( uint a_time );
+        void sleep( unsigned int a_time ); // Should use a unit
         void writeSerial( const std::string& a_command );
         auto measureVoltageAsync( volt a_safeVoltage,
                                   second a_waitForMeasurement,
@@ -78,16 +80,15 @@ namespace psu
         ampere m_setCurrent;
 
         // Status flags
-        bool m_currentLimited = false; // cv, Current or voltage limited?
-        bool m_outputOn = false;       // on
-        bool m_ocp = false;            // ocp, What is it?
+        bool m_currentLimited { false }; // cv, Current or voltage limited?
+        bool m_outputOn { false };       // on
+        bool m_ocp { false };            // ocp, What is it? Guessing voltageLimited
 
         second m_serialWaitTime;
-        serial_cpp::Timeout m_timeOutTime;
 
-        serial_cpp::Serial m_serial;
+        serial_cpp::Serial* m_serial { nullptr };
 
-        bool m_verbose = false; // TODO Do something with this
+        bool m_verbose { false }; // TODO Do something with this
     };
 
 } // namespace psu

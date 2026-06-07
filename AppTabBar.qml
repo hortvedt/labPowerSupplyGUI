@@ -12,6 +12,6 @@ TabBar{
             text: "Battery charger"
         }
         TabButton {
-            text: "Free"
+            text: "Free serial"
         }
 }

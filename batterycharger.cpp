@@ -7,7 +7,7 @@
 namespace psu::bc
 {
 
-    BatteryCharger::BatteryCharger( Psu& a_psu )
+    BatteryCharger::BatteryCharger( Psu* a_psu )
         : m_psu { a_psu }
     {
     }
@@ -46,7 +46,7 @@ namespace psu::bc
 
     void BatteryCharger::startSerial()
     {
-        m_psu.openSerial();
+        m_psu->openSerial();
     }
 
     auto BatteryCharger::chargeCheck() -> bool
@@ -87,8 +87,8 @@ namespace psu::bc
 
     auto BatteryCharger::measureBatteryVoltage() -> volt
     {
-        auto futureBatteryVoltage = m_psu.measureVoltage( m_voltageMax,
-                                                          m_waitTimeForBatteryVoltageMeasurements );
+        auto futureBatteryVoltage = m_psu->measureVoltage( m_voltageMax,
+                                                           m_waitTimeForBatteryVoltageMeasurements );
         m_batteryVoltage = futureBatteryVoltage.get();
         return m_batteryVoltage;
     }
@@ -98,31 +98,31 @@ namespace psu::bc
         // Could add a while and do it until it changes
         // I have a todo at the psu level to check for already set value
         assert( a_voltage < m_voltageMax );
-        m_psu.setVoltage( a_voltage );
+        m_psu->setVoltage( a_voltage );
         getSetVoltage();
     }
 
     void BatteryCharger::setCurrent( ampere a_current )
     {
         assert( a_current < m_currentMax );
-        m_psu.setCurrent( a_current );
+        m_psu->setCurrent( a_current );
         getSetCurrent();
     }
 
     void BatteryCharger::endSerial()
     {
-        m_psu.closeSerial();
+        m_psu->closeSerial();
     }
 
     auto BatteryCharger::readVoltage() -> volt
     {
-        m_voltage = m_psu.voltage();
+        m_voltage = m_psu->voltage();
         return m_voltage;
     }
 
     auto BatteryCharger::readCurrent() -> ampere
     {
-        m_current = m_psu.current();
+        m_current = m_psu->current();
         return m_current;
     }
 
@@ -198,23 +198,23 @@ namespace psu::bc
 
     void BatteryCharger::turnOffOutput()
     {
-        m_psu.turnOutputOff();
+        m_psu->turnOutputOff();
     }
 
     void BatteryCharger::turnOnOutput()
     {
-        m_psu.turnOutputOn();
+        m_psu->turnOutputOn();
     }
 
     auto BatteryCharger::getSetVoltage() -> volt
     {
-        m_setVoltage = m_psu.getSetVoltage();
+        m_setVoltage = m_psu->getSetVoltage();
         return m_setVoltage;
     }
 
     auto BatteryCharger::getSetCurrent() -> ampere
     {
-        m_setCurrent = m_psu.getSetCurrent();
+        m_setCurrent = m_psu->getSetCurrent();
         return m_setCurrent;
     }
 
