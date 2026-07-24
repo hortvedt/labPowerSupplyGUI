@@ -9,7 +9,7 @@
 #include <unitdefinitions.h>
 #include <utils.h>
 
-namespace psu::bc
+namespace psu
 {
     // The python class is more of a cli so some thing will be natural to take out
     class BatteryCharger
@@ -109,4 +109,4 @@ namespace psu::bc
         // std::vector< ampere > m_currentHistory;
         // std::vector< volt > m_batteryVoltageHistory;
     };
-} // namespace psu::bc
+} // namespace psu

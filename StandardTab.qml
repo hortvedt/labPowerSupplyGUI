@@ -12,6 +12,12 @@ Item {
             text: "My text"
             state: false
         }
+
+        StatusLamp {
+            id: lamp2
+            text: "Connected"
+            state:
+        }
     }
 
     MouseArea {

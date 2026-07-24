@@ -18,7 +18,12 @@ ApplicationWindow {
         currentIndex: 0
 
         StandardTab {
-
+        }
+        StandardTab {
+        }
+        StandardTab {
+        }
+        StandardTab {
         }
     }
 

@@ -1,10 +1,10 @@
-#include "batterycharger.h"
+#include <batterycharger.h>
 
 #include <assert.h>
 
 // #include <yaml-cpp/yaml.h>
 
-namespace psu::bc
+namespace psu
 {
 
     BatteryCharger::BatteryCharger( Psu* a_psu )
@@ -235,4 +235,4 @@ namespace psu::bc
     //     YAML::Node batteryParams = YAML::LoadFile( a_yamlFile );
     // }
 
-} // namespace psu::bc
+} // namespace psu

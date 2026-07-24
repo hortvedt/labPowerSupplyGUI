@@ -6,7 +6,9 @@ namespace psu::mmi
     SingletonClass::SingletonClass( QObject *parent )
         : QObject { parent }
         , m_psu { new Psu() }
-        , m_psuController { new PsuController( m_psu ) }
+        , m_psuController { new PsuController( m_psu, this ) }
+        , m_bcController { new BcController( m_psu, this ) }
+        , m_csvController { new CsvController( m_psu, this ) }
     {
     }
 

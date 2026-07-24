@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include <QtQml/qqmlregistration.h>
+#include <applicationcontroller.h>
 #include <bccontroller.h>
 #include <csvcontroller.h>
 #include <psucontroller.h>
@@ -14,6 +15,12 @@ namespace psu::mmi
     {
         Q_OBJECT
         QML_SINGLETON
+
+        Q_PROPERTY( psu::mmi::PsuController psuController MEMBER m_psuController CONSTANT )
+        Q_PROPERTY( psu::mmi::BcController bcController MEMBER m_bcController CONSTANT )
+        Q_PROPERTY( psu::mmi::CsvController psuController MEMBER m_csvController CONSTANT )
+        Q_PROPERTY( psu::mmi::ApplicationController applicationController MEMBER
+                        m_applicationController CONSTANT )
 
     public:
         explicit SingletonClass( QObject* parent = nullptr );
@@ -30,11 +37,12 @@ namespace psu::mmi
     signals:
 
     private:
-        serial_cpp::Serial* m_serial;
-        psu::Psu* m_psu;
-        psu::mmi::PsuController* m_psuController;
-        psu::mmi::BcController* m_bcController;
-        psu::mmi::CsvController* m_csvController;
+        serial_cpp::Serial* m_serial { nullptr };
+        psu::Psu* m_psu { nullptr };
+        psu::mmi::PsuController* m_psuController { nullptr };
+        psu::mmi::BcController* m_bcController { nullptr };
+        psu::mmi::CsvController* m_csvController { nullptr };
+        psu::mmi::ApplicationController* m_applicationController { nullptr };
     };
 
 } // namespace psu::mmi

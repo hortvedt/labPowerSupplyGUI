@@ -2,6 +2,9 @@
 
 #include <QObject>
 
+#include <batterycharger.h>
+#include <psu.h>
+
 namespace psu::mmi
 {
 
@@ -9,9 +12,13 @@ namespace psu::mmi
         {
             Q_OBJECT
         public:
-            explicit BcController( QObject *parent = nullptr );
+            explicit BcController( Psu* a_psu, QObject* a_parent = nullptr );
 
         signals:
+
+        private:
+            Psu* m_psu { nullptr };
+            BatteryCharger* m_batteryCharger;
         };
 
 } // namespace psu
