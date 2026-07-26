@@ -17,7 +17,7 @@ ApplicationWindow {
         anchors.fill: parent
         currentIndex: 0
 
-        StandardTab {
+        ConnectingTab {
         }
         StandardTab {
         }

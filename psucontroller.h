@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include <psu.h>
+#include <qqmlintegration.h>
 #include <unitdefinitions.h>
 
 // Does no nullptr checks
@@ -13,32 +14,40 @@ namespace psu::mmi
     class PsuController : public QObject
     {
         Q_OBJECT
+        QML_ELEMENT
+        QML_UNCREATABLE( "" )
 
-        Q_PROPERTY( psu::volt voltage READ voltage NOTIFY voltageChanged FINAL );
-        Q_PROPERTY( psu::volt current READ current NOTIFY currentChanged FINAL );
-        Q_PROPERTY( bool serialOpen READ serialOpen NOTIFY serialOpenChanged FINAL );
-        Q_PROPERTY( bool currentLimited READ currentLimited NOTIFY currentLimitedChanged FINAL );
-        Q_PROPERTY( bool voltageLimited READ voltageLimited NOTIFY voltageLimitedChanged FINAL );
-        Q_PROPERTY( bool outputOn READ outputOn NOTIFY outputOnChanged FINAL );
-        Q_PROPERTY( psu::volt setVoltage READ setVoltage NOTIFY setVoltageChanged FINAL );
-        Q_PROPERTY( psu::ampere setCurrent READ setCurrent NOTIFY setCurrentChanged FINAL );
-        Q_PROPERTY( QString identification READ identification NOTIFY identificationChanged FINAL );
+        Q_PROPERTY( psu::volt voltage READ voltage NOTIFY voltageChanged );
+        Q_PROPERTY( psu::volt current READ current NOTIFY currentChanged );
+        Q_PROPERTY( bool serialOpen READ serialOpen NOTIFY serialOpenChanged );
+        Q_PROPERTY( bool currentLimited READ currentLimited NOTIFY currentLimitedChanged );
+        Q_PROPERTY( bool voltageLimited READ voltageLimited NOTIFY voltageLimitedChanged );
+        Q_PROPERTY( bool outputOn READ outputOn NOTIFY outputOnChanged );
+        Q_PROPERTY( psu::volt setVoltage READ setVoltage NOTIFY setVoltageChanged );
+        Q_PROPERTY( psu::ampere setCurrent READ setCurrent NOTIFY setCurrentChanged );
+        Q_PROPERTY( QString identification READ identification NOTIFY identificationChanged );
 
     public:
         explicit PsuController( Psu* a_psu, QObject* a_parent = nullptr );
 
         //Methods
-        volt voltage();
-        ampere current();
-        bool serialOpen();
-        bool currentLimited();
-        bool voltageLimited();
-        bool outputOn();
-        volt setVoltage();
-        ampere setCurrent();
-        QString identification();
+        auto voltage() -> volt;
+        auto current() -> ampere;
+        auto serialOpen() -> bool;
+        auto currentLimited() -> bool;
+        auto voltageLimited() -> bool;
+        auto outputOn() -> bool;
+        auto setVoltage() -> volt;
+        auto setCurrent() -> ampere;
+        auto identification() -> QString;
 
-        void createNewPsu();
+        // void createNewPsu();
+
+        auto connectedToPsu() -> bool;
+
+        void updateContinuallyChangingData();
+        void updateSetState();
+        void updateIdentification();
 
         // void setPsu( Psu* a_psu );
         auto isSerialSet() -> bool;
@@ -47,9 +56,11 @@ namespace psu::mmi
         void voltageChanged();
         void currentChanged();
         void serialOpenChanged();
+
         void currentLimitedChanged();
         void voltageLimitedChanged();
         void outputOnChanged();
+
         void setVoltageChanged();
         void setCurrentChanged();
         void identificationChanged();
@@ -60,8 +71,17 @@ namespace psu::mmi
         void resetAllValues();
         void outputOffReset();
 
+        void updateVoltage();
+        void updateCurrent();
+        void updateStatus();
+
+        void updateSetVoltage();
+        void updateSetCurrent();
+        void updateSerialOpen();
+
         // Members
         bool m_serialSet = false;
+        bool m_allValuesReset = true;
 
         // Setup
         std::string m_port;

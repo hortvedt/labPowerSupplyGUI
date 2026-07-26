@@ -3,25 +3,27 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
+import labPowersupplyGUI
+
 Item {
 
     ColumnLayout {
 
-        StatusLamp {
-            id: lamp
-            text: "My text"
-            state: false
-        }
+        // StatusLamp {
+        //     id: lamp
+        //     text: "My text"
+        //     state: false
+        // }
 
         StatusLamp {
             id: lamp2
             text: "Connected"
-            state:
+            state: SingletonClass.connectionController.connectedToPsu
         }
     }
 
     MouseArea {
         anchors.fill: parent
-        onClicked: lamp.state = !lamp.state
+        onClicked: lamp2.state = !lamp2.state
     }
 }

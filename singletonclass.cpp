@@ -3,13 +3,21 @@
 namespace psu::mmi
 {
 
-    SingletonClass::SingletonClass( QObject *parent )
+    SingletonClass::SingletonClass( QObject* parent )
         : QObject { parent }
         , m_psu { new Psu() }
         , m_psuController { new PsuController( m_psu, this ) }
         , m_bcController { new BcController( m_psu, this ) }
+        // Maybe take the PsuController instead of the psu directly
         , m_csvController { new CsvController( m_psu, this ) }
+        , m_connectionController { new ConnectionController( m_psu, this ) }
+        , m_applicationController { new ApplicationController( m_psu, this ) }
     {
+    }
+
+    SingletonClass* SingletonClass::create( QQmlEngine* a_qmlEngine )
+    {
+        return new SingletonClass( a_qmlEngine );
     }
 
     void SingletonClass::setSerial( const std::string &a_port,

@@ -24,6 +24,8 @@ namespace psu::mmi
 
         switch ( role )
         {
+        case Qt::DisplayRole:
+            [[fallthrough]];
         case TextRole:
             return item.first;
         case ValueRole:
@@ -36,16 +38,38 @@ namespace psu::mmi
     QHash< int, QByteArray > ComboBoxModel::roleNames() const
     {
         QHash< int, QByteArray > roles;
-        roles [ TextRole ] = "displayText";
-        roles [ ValueRole ] = "itemValue";
+        roles [ TextRole ] = "TextRole";
+        roles [ Qt::DisplayRole ] = "DisplayRole";
+        roles [ ValueRole ] = "ValueRole";
         return roles;
     }
 
-    void ComboBoxModel::addItem( const QString &text, int value )
+    void ComboBoxModel::addItem( const QString &text, const QVariant &value )
     {
         beginInsertRows( QModelIndex(), m_items.size(), m_items.size() );
         m_items.append( qMakePair( text, value ) );
         endInsertRows();
+    }
+
+    // Convenience overloads for common types
+    void ComboBoxModel::addItem( const QString &text, int value )
+    {
+        addItem( text, QVariant( value ) );
+    }
+
+    void ComboBoxModel::addItem( const QString &text, double value )
+    {
+        addItem( text, QVariant( value ) );
+    }
+
+    void ComboBoxModel::addItem( const QString &text, const QString &value )
+    {
+        addItem( text, QVariant( value ) );
+    }
+
+    void ComboBoxModel::addItem( const QString &text, bool value )
+    {
+        addItem( text, QVariant( value ) );
     }
 
     void ComboBoxModel::clear()
@@ -73,11 +97,11 @@ namespace psu::mmi
         emit currentTextChanged();
     }
 
-    int ComboBoxModel::currentValue() const
+    QVariant ComboBoxModel::currentValue() const
     {
         if ( m_currentIndex >= 0 && m_currentIndex < m_items.size() )
             return m_items [ m_currentIndex ].second;
-        return -1;
+        return QVariant();
     }
 
     QString ComboBoxModel::currentText() const
@@ -86,4 +110,38 @@ namespace psu::mmi
             return m_items [ m_currentIndex ].first;
         return QString();
     }
+
+    // Convenience methods to get value as specific types
+    int ComboBoxModel::currentValueAsInt() const
+    {
+        QVariant value = currentValue();
+        if ( value.canConvert< int >() )
+            return value.toInt();
+        return 0;
+    }
+
+    QString ComboBoxModel::currentValueAsString() const
+    {
+        QVariant value = currentValue();
+        if ( value.canConvert< QString >() )
+            return value.toString();
+        return QString();
+    }
+
+    double ComboBoxModel::currentValueAsDouble() const
+    {
+        QVariant value = currentValue();
+        if ( value.canConvert< double >() )
+            return value.toDouble();
+        return 0.0;
+    }
+
+    bool ComboBoxModel::currentValueAsBool() const
+    {
+        QVariant value = currentValue();
+        if ( value.canConvert< bool >() )
+            return value.toBool();
+        return false;
+    }
+
 } // namespace psu::mmi

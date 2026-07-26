@@ -27,22 +27,27 @@ qt_add_qml_module(applabPowersupplyGUI
         LedIndicator.qml
         Main.qml
         StandardTab.qml
+        StatusLamp.qml
     SOURCES
+        applicationcontroller.h applicationcontroller.cpp
         batterycharger.h batterycharger.cpp
         bccontroller.h bccontroller.cpp
+        comboboxmodel.h comboboxmodel.cpp
         csvcontroller.h csvcontroller.cpp
         psu.h psu.cpp
         psucontroller.h psucontroller.cpp
+        serialsetupcontroller.h serialsetupcontroller.cpp
+        singletonclass.h singletonclass.cpp
         unitdefinitions.h
         utils.h utils.cpp
     RESOURCES
         LICENSE.txt
         README.md
-        SOURCES singletonclass.h singletonclass.cpp
-        QML_FILES StatusLamp.qml
-        SOURCES serialsetupcontroller.h serialsetupcontroller.cpp
-        SOURCES comboboxmodel.h comboboxmodel.cpp
-        SOURCES applicationcontroller.h applicationcontroller.cpp
+        QML_FILES ConnectingTab.qml
+        QML_FILES
+        QML_FILES LabelComboBox.qml
+        SOURCES connectioncontroller.h connectioncontroller.cpp
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

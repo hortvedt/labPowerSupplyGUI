@@ -5,8 +5,10 @@
 #include <QtQml/qqmlregistration.h>
 #include <applicationcontroller.h>
 #include <bccontroller.h>
+#include <connectioncontroller.h>
 #include <csvcontroller.h>
 #include <psucontroller.h>
+#include <qqmlengine.h>
 
 namespace psu::mmi
 {
@@ -14,16 +16,21 @@ namespace psu::mmi
     class SingletonClass : public QObject
     {
         Q_OBJECT
+        QML_ELEMENT
         QML_SINGLETON
 
-        Q_PROPERTY( psu::mmi::PsuController psuController MEMBER m_psuController CONSTANT )
-        Q_PROPERTY( psu::mmi::BcController bcController MEMBER m_bcController CONSTANT )
-        Q_PROPERTY( psu::mmi::CsvController psuController MEMBER m_csvController CONSTANT )
-        Q_PROPERTY( psu::mmi::ApplicationController applicationController MEMBER
+        Q_PROPERTY( psu::mmi::PsuController* psuController MEMBER m_psuController CONSTANT )
+        Q_PROPERTY( psu::mmi::BcController* bcController MEMBER m_bcController CONSTANT )
+        Q_PROPERTY( psu::mmi::CsvController* csvController MEMBER m_csvController CONSTANT )
+        Q_PROPERTY( psu::mmi::ConnectionController* connectionController MEMBER
+                        m_connectionController CONSTANT )
+        Q_PROPERTY( psu::mmi::ApplicationController* applicationController MEMBER
                         m_applicationController CONSTANT )
 
     public:
         explicit SingletonClass( QObject* parent = nullptr );
+
+        auto create( QQmlEngine* a_qmlEngine ) -> SingletonClass*;
 
         void setSerial( const std::string& a_port, // com
                         unsigned int a_baudrate = 9600,
@@ -42,6 +49,7 @@ namespace psu::mmi
         psu::mmi::PsuController* m_psuController { nullptr };
         psu::mmi::BcController* m_bcController { nullptr };
         psu::mmi::CsvController* m_csvController { nullptr };
+        psu::mmi::ConnectionController* m_connectionController { nullptr };
         psu::mmi::ApplicationController* m_applicationController { nullptr };
     };
 

@@ -1,6 +1,10 @@
-#include "applicationcontroller.h"
+#include <applicationcontroller.h>
 
-ApplicationController::ApplicationController( QObject *parent )
-    : QObject { parent }
+namespace psu::mmi
 {
-}
+    ApplicationController::ApplicationController( Psu *a_psu, QObject *parent )
+        : QObject { parent }
+        , m_psu { a_psu }
+    {
+    }
+} // namespace psu::mmi

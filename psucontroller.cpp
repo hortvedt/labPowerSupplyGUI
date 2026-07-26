@@ -9,49 +9,87 @@ namespace psu::mmi
     {
     }
 
-    volt PsuController::voltage()
+    auto PsuController::voltage() -> volt
     {
         return m_voltage;
     }
 
-    ampere PsuController::current()
+    auto PsuController::current() -> ampere
     {
         return m_current;
     }
 
-    bool PsuController::serialOpen()
+    auto PsuController::serialOpen() -> bool
     {
         return m_serialOpen;
     }
 
-    bool PsuController::currentLimited()
+    auto PsuController::currentLimited() -> bool
     {
         return m_currentLimited;
     }
 
-    bool PsuController::voltageLimited()
+    auto PsuController::voltageLimited() -> bool
     {
         return m_voltageLimited;
     }
 
-    bool PsuController::outputOn()
+    auto PsuController::outputOn() -> bool
     {
         return m_outputOn;
     }
 
-    volt PsuController::setVoltage()
+    auto PsuController::setVoltage() -> volt
     {
         return m_setVoltage;
     }
 
-    ampere PsuController::setCurrent()
+    auto PsuController::setCurrent() -> ampere
     {
         return m_setCurrent;
     }
 
-    QString PsuController::identification()
+    auto PsuController::identification() -> QString
     {
         return m_identification;
+    }
+
+    auto PsuController::connectedToPsu() -> bool
+    {
+        if ( m_serialSet )
+        {
+        }
+        return true;
+    }
+
+    void PsuController::updateContinuallyChangingData()
+    {
+        if ( m_serialSet )
+        {
+            updateStatus();
+            updateVoltage();
+            updateCurrent();
+        }
+    }
+
+    void PsuController::updateSetState()
+    {
+        if ( m_serialSet )
+        {
+            updateSerialOpen();
+            updateSetVoltage();
+            updateSetCurrent();
+        }
+    }
+
+    void PsuController::updateIdentification()
+    {
+        std::string newIdentification = m_psu->getIdentification();
+        if ( m_identification != newIdentification )
+        {
+            m_identification = QString::fromStdString( newIdentification );
+            emit identificationChanged();
+        }
     }
 
     bool PsuController::isSerialSet()
@@ -66,7 +104,7 @@ namespace psu::mmi
     //     m_psuSet = true;
     // }
 
-    void PsuController::getAllValues()
+    void PsuController::getAllValues() // TODO: Update this to something usefull or remove it.
     {
         // Status
         if ( m_serialSet )
@@ -74,25 +112,23 @@ namespace psu::mmi
             m_serialOpen = m_psu->serialOpen();
             if ( m_serialOpen )
             {
-                m_identification = QString::fromStdString( m_psu->getIdentification() );
-
-                m_setVoltage = m_psu->getSetVoltage();
-                m_setCurrent = m_psu->getSetCurrent();
+                m_allValuesReset = false;
 
                 m_psu->updateStatus();
-                m_currentLimited = m_psu->getCurrentLimited();
-                m_voltageLimited = m_psu->getVoltageLimited();
-                m_outputOn = m_psu->getoutputOn();
 
-                if ( m_outputOn )
-                {
-                    m_voltage = m_psu->voltage();
-                    m_current = m_psu->current();
-                }
-                else
-                {
-                    outputOffReset();
-                }
+                updateIdentification();
+                updateSetState();
+                updateContinuallyChangingData();
+
+                // if ( m_outputOn ) // Maybe needed, but dont know
+                // {
+                //     m_voltage = m_psu->voltage();
+                //     m_current = m_psu->current();
+                // }
+                // else
+                // {
+                //     outputOffReset();
+                // }
             }
             else
             {
@@ -103,6 +139,8 @@ namespace psu::mmi
 
     void PsuController::resetAllValues()
     {
+        m_allValuesReset = true;
+
         m_identification.clear();
 
         m_setVoltage = 0;
@@ -119,6 +157,82 @@ namespace psu::mmi
     {
         m_voltage = 0;
         m_current = 0;
+    }
+
+    void PsuController::updateVoltage()
+    {
+        volt newVoltage = m_psu->voltage();
+        if ( m_voltage != newVoltage )
+        {
+            m_voltage = newVoltage;
+            emit voltageChanged();
+        }
+    }
+
+    void PsuController::updateCurrent()
+    {
+        ampere newCurrent = m_psu->current();
+        if ( m_current != newCurrent )
+        {
+            m_current = newCurrent;
+            emit currentChanged();
+        }
+    }
+
+    void PsuController::updateStatus()
+    {
+        m_psu->updateStatus();
+
+        bool newCurrentLimited = m_psu->getCurrentLimited();
+        if ( m_currentLimited != newCurrentLimited )
+        {
+            m_currentLimited = newCurrentLimited;
+            emit currentLimitedChanged();
+        }
+
+        bool newVoltageLimited = m_psu->getVoltageLimited();
+        if ( m_voltageLimited != newVoltageLimited )
+        {
+            m_voltageLimited = newVoltageLimited;
+            emit voltageLimitedChanged();
+        }
+
+        bool newOutputOn = m_psu->getOutputOn();
+        if ( m_outputOn != newOutputOn )
+        {
+            m_outputOn = newOutputOn;
+            emit outputOnChanged();
+        }
+    }
+
+    void PsuController::updateSetVoltage()
+    {
+        volt newSetVoltage = m_psu->getSetVoltage();
+        if ( m_setVoltage != newSetVoltage )
+        {
+            m_setVoltage = newSetVoltage;
+            emit setVoltageChanged();
+        }
+    }
+
+    void PsuController::updateSetCurrent()
+    {
+        ampere newSetCurrent = m_psu->getSetCurrent();
+        if ( m_setCurrent != newSetCurrent )
+        {
+            m_setCurrent = newSetCurrent;
+            emit setCurrentChanged();
+        }
+    }
+
+    void PsuController::updateSerialOpen()
+    {
+        bool newSerialOpen = m_psu->serialOpen();
+        if ( m_serialOpen != newSerialOpen )
+        {
+            m_serialOpen = newSerialOpen;
+            emit serialOpenChanged();
+        }
     }
 
 } // namespace psu

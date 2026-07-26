@@ -42,7 +42,7 @@ namespace psu
         auto getStatus() -> std::string&; // should this return or just fetch the new value
         auto getCurrentLimited() -> bool;
         auto getVoltageLimited() -> bool;
-        auto getoutputOn() -> bool;
+        auto getOutputOn() -> bool;
         auto getIdentification() -> std::string&; // should this return or just fetch the new value
         void updateStatus();
         auto voltage() -> volt;

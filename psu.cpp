@@ -138,7 +138,7 @@ namespace psu {
         return m_ocp;
     }
 
-    auto Psu::getoutputOn() -> bool
+    auto Psu::getOutputOn() -> bool
     {
         return m_outputOn;
     }
