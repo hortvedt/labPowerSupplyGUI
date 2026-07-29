@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-import labPowersupplyGUI
+import labPowerSupplyGUI
 
 Item {
     id: root
@@ -105,6 +105,12 @@ Item {
                 text: "Flow control"
                 model: SingletonClass.connectionController.flowcontrolCombo
             }
+        }
+
+        Button {
+            text: "Connect"
+            onClicked:
+                console.log( "Clicked" )
         }
     }
 }

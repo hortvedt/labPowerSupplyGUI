@@ -117,9 +117,4 @@ namespace psu::mmi
         return &m_flowcontrolCombo;
     }
 
-    // auto ApplicationController::bytesizeCombo() const -> const ComboBoxModel *
-    // {
-    //     return &m_bytesizeCombo;
-    // }
-
 } // namespace psu::mmi

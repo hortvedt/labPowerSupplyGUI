@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import labPowersupplyGUI
+import labPowerSupplyGUI
 
 Item {
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(labPowersupplyGUI VERSION 0.1 LANGUAGES CXX)
+project(labPowerSupplyGUI VERSION 0.1 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 23)  # Use 11, 14, 17, 20, or 23
@@ -14,25 +14,29 @@ find_package(yaml-cpp REQUIRED )
 
 qt_standard_project_setup(REQUIRES 6.8)
 
-qt_add_executable(applabPowersupplyGUI
+qt_add_executable(appLabPowerSupplyGUI
     main.cpp
 )
 
-qt_add_qml_module(applabPowersupplyGUI
-    URI labPowersupplyGUI
+qt_add_qml_module(appLabPowerSupplyGUI
+    URI labPowerSupplyGUI
     QML_FILES
         AppMenuBar.qml
         AppTabBar.qml
         AppToolBar.qml
+        ConnectingTab.qml
+        LabelComboBox.qml
         LedIndicator.qml
         Main.qml
         StandardTab.qml
+        StatusInformation.qml
         StatusLamp.qml
     SOURCES
         applicationcontroller.h applicationcontroller.cpp
         batterycharger.h batterycharger.cpp
         bccontroller.h bccontroller.cpp
         comboboxmodel.h comboboxmodel.cpp
+        connectioncontroller.h connectioncontroller.cpp
         csvcontroller.h csvcontroller.cpp
         psu.h psu.cpp
         psucontroller.h psucontroller.cpp
@@ -43,25 +47,20 @@ qt_add_qml_module(applabPowersupplyGUI
     RESOURCES
         LICENSE.txt
         README.md
-        QML_FILES ConnectingTab.qml
-        QML_FILES
-        QML_FILES LabelComboBox.qml
-        SOURCES connectioncontroller.h connectioncontroller.cpp
-
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(applabPowersupplyGUI PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.applabPowersupplyGUI
+set_target_properties(appLabPowerSupplyGUI PROPERTIES
+#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appLabPowerSupplyGUI
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(applabPowersupplyGUI
+target_link_libraries(appLabPowerSupplyGUI
     PRIVATE
     Qt6::Quick
     serial_cpp::serial_cpp
@@ -129,7 +128,7 @@ add_custom_target(check
 # ============================================================
 
 include(GNUInstallDirs)
-install(TARGETS applabPowersupplyGUI
+install(TARGETS appLabPowerSupplyGUI
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

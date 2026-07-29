@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import labPowerSupplyGUI
+
 ApplicationWindow {
     width: 640
     height: 480
@@ -10,12 +12,12 @@ ApplicationWindow {
 
     menuBar: AppMenuBar{}
     header: AppTabBar{}
-    // footer: AppToolBar{}
+    footer: StatusInformation{}
 
     StackLayout {
         id: stack
         anchors.fill: parent
-        currentIndex: 0
+        currentIndex: SingletonClass.applicationController.tab
 
         ConnectingTab {
         }
@@ -25,12 +27,7 @@ ApplicationWindow {
         }
         StandardTab {
         }
-    }
-
-    Component {
-        id: filler
-        Label {
-            text: "Hei"
+        StandardTab {
         }
     }
 }
