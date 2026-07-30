@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 23)  # Use 11, 14, 17, 20, or 23
 set(CMAKE_CXX_STANDARD_REQUIRED ON)  # Force the standard, don't fall back
 set(CMAKE_CXX_EXTENSIONS OFF)  # Use -std=c++17 instead of -std=gnu++17
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick Core)
 find_package(serial_cpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS unit_test_framework CONFIG)
 find_package(yaml-cpp REQUIRED )
@@ -15,35 +15,41 @@ find_package(yaml-cpp REQUIRED )
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appLabPowerSupplyGUI
-    main.cpp
+    src/main.cpp
+)
+
+target_include_directories(appLabPowerSupplyGUI
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 qt_add_qml_module(appLabPowerSupplyGUI
     URI labPowerSupplyGUI
     QML_FILES
-        AppMenuBar.qml
-        AppTabBar.qml
-        AppToolBar.qml
-        ConnectingTab.qml
-        LabelComboBox.qml
-        LedIndicator.qml
-        Main.qml
-        StandardTab.qml
-        StatusInformation.qml
-        StatusLamp.qml
+        qml/AppMenuBar.qml
+        qml/AppTabBar.qml
+        qml/AppToolBar.qml
+        qml/ConnectingTab.qml
+        qml/LabelComboBox.qml
+        qml/LedIndicator.qml
+        qml/Main.qml
+        qml/StandardTab.qml
+        qml/StatusInformation.qml
+        qml/StatusLamp.qml
     SOURCES
-        applicationcontroller.h applicationcontroller.cpp
-        batterycharger.h batterycharger.cpp
-        bccontroller.h bccontroller.cpp
-        comboboxmodel.h comboboxmodel.cpp
-        connectioncontroller.h connectioncontroller.cpp
-        csvcontroller.h csvcontroller.cpp
-        psu.h psu.cpp
-        psucontroller.h psucontroller.cpp
-        serialsetupcontroller.h serialsetupcontroller.cpp
-        singletonclass.h singletonclass.cpp
-        unitdefinitions.h
-        utils.h utils.cpp
+        src/applicationcontroller.h src/applicationcontroller.cpp
+        src/batterycharger.h src/batterycharger.cpp
+        src/bccontroller.h src/bccontroller.cpp
+        src/comboboxmodel.h src/comboboxmodel.cpp
+        src/connectioncontroller.h src/connectioncontroller.cpp
+        src/csvcontroller.h src/csvcontroller.cpp
+        src/psu.h src/psu.cpp
+        src/psucontroller.h src/psucontroller.cpp
+        src/serialsetupcontroller.h src/serialsetupcontroller.cpp
+        src/singletonclass.h src/singletonclass.cpp
+        src/unitdefinitions.h
+        src/utils.h src/utils.cpp
     RESOURCES
         LICENSE.txt
         README.md
@@ -74,14 +80,15 @@ target_link_libraries(appLabPowerSupplyGUI
 # Create a library with the core functionality to be tested
 # This avoids linking Qt and other dependencies if they're not needed for tests
 add_library(core_functionality STATIC
-    batterycharger.cpp
-    psu.cpp
-    utils.cpp
+    src/batterycharger.cpp
+    src/psu.cpp
+    src/utils.cpp
 )
 
 target_include_directories(core_functionality
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 # If your core functionality doesn't need Qt, you can skip linking it
 # But if it does, uncomment the next line:
@@ -89,12 +96,13 @@ target_include_directories(core_functionality
 
 # Create test executable
 add_executable(testCoreFunctionality
-    corefuntionalitytests.cpp
+    src/corefuntionalitytests.cpp
 )
 
 target_include_directories(testCoreFunctionality
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 
