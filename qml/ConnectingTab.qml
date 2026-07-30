@@ -11,11 +11,10 @@ Item {
     property int boxWidth: 200
 
     RowLayout {
+        spacing: 50
 
         ColumnLayout {
-
             RowLayout {
-
                 Label {
                     Layout.preferredWidth: root.labelWidth
                     text: "Port"
@@ -28,7 +27,6 @@ Item {
             }
 
             RowLayout {
-
                 Label {
                     Layout.preferredWidth: root.labelWidth
                     text: "Baudrate"
@@ -36,11 +34,13 @@ Item {
 
                 SpinBox {
                     id: baudrateBox
+
                     Layout.preferredWidth: root.boxWidth
                     from: 1
                     to: 921600
                     stepSize: 100
                     value: 9600
+
                     // onValueChanged: baudrate = value
 
                     contentItem: Text {
@@ -52,7 +52,6 @@ Item {
             }
 
             RowLayout {
-
                 Label {
                     Layout.preferredWidth: root.labelWidth
                     text: "Timeout"
@@ -60,6 +59,7 @@ Item {
 
                 SpinBox { // Use simpleTimeout
                     id: timeoutBox
+
                     Layout.preferredWidth: root.boxWidth
                     from: 0
                     to: 1000
@@ -71,12 +71,8 @@ Item {
                         horizontalAlignment: Text.AlignLeft
                         color: parent.palette.text
                     }
-
                 }
             }
-
-
-
 
             LabelComboBox {
                 labelWidth: root.labelWidth
@@ -109,8 +105,10 @@ Item {
 
         Button {
             text: "Connect"
-            onClicked:
-                console.log( "Clicked" )
+
+            onClicked: {
+                console.log("Clicked")
+            }
         }
     }
 }

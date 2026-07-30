@@ -33,6 +33,8 @@ namespace psu::mmi
                         serial_cpp::stopbits_t a_stopbits = serial_cpp::stopbits_one,
                         serial_cpp::flowcontrol_t a_flowcontrol = serial_cpp::flowcontrol_none );
 
+        void updateSerialSettings();
+
     signals:
         void connectedToPsuChanged();
 
@@ -46,6 +48,11 @@ namespace psu::mmi
         auto parityCombo() -> ComboBoxModel*;
         auto stopbitsCombo() -> ComboBoxModel*;
         auto flowcontrolCombo() -> ComboBoxModel*;
+
+        auto getSelectedBytesize() const -> serial_cpp::bytesize_t;
+        auto getSelectedParity() const -> serial_cpp::parity_t;
+        auto getSelectedStopbits() const -> serial_cpp::stopbits_t;
+        auto getSelectedFlowcontrol() const -> serial_cpp::flowcontrol_t;
 
         // members
         serial_cpp::Serial* m_serial { nullptr };

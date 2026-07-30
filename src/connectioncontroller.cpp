@@ -81,6 +81,19 @@ namespace psu::mmi
         m_psu->setSerial( m_serial, a_serialWaitTime );
     }
 
+    void ConnectionController::updateSerialSettings()
+    {
+        serial_cpp::bytesize_t bytesize = getSelectedBytesize();
+        serial_cpp::parity_t parity = getSelectedParity();
+        serial_cpp::stopbits_t stopbits = getSelectedStopbits();
+        serial_cpp::flowcontrol_t flowcontrol = getSelectedFlowcontrol();
+
+        m_bytesize = bytesize;
+        m_parity = parity;
+        m_stopbits = stopbits;
+        m_flowcontrol = flowcontrol;
+    }
+
     auto ConnectionController::connectToPsu() -> bool
     {
         if ( not m_psu->serialOpen() )
@@ -115,6 +128,46 @@ namespace psu::mmi
     auto ConnectionController::flowcontrolCombo() -> ComboBoxModel *
     {
         return &m_flowcontrolCombo;
+    }
+
+    auto ConnectionController::getSelectedBytesize() const -> serial_cpp::bytesize_t
+    {
+        QVariant value = m_bytesizeCombo.currentValue();
+        if ( value.isValid() && value.canConvert< int >() )
+        {
+            return static_cast< serial_cpp::bytesize_t >( value.toInt() );
+        }
+        return serial_cpp::eightbits;
+    }
+
+    auto ConnectionController::getSelectedParity() const -> serial_cpp::parity_t
+    {
+        QVariant value = m_parityCombo.currentValue();
+        if ( value.isValid() && value.canConvert< int >() )
+        {
+            return static_cast< serial_cpp::parity_t >( value.toInt() );
+        }
+        return serial_cpp::parity_none;
+    }
+
+    auto ConnectionController::getSelectedStopbits() const -> serial_cpp::stopbits_t
+    {
+        QVariant value = m_stopbitsCombo.currentValue();
+        if ( value.isValid() && value.canConvert< int >() )
+        {
+            return static_cast< serial_cpp::stopbits_t >( value.toInt() );
+        }
+        return serial_cpp::stopbits_one;
+    }
+
+    auto ConnectionController::getSelectedFlowcontrol() const -> serial_cpp::flowcontrol_t
+    {
+        QVariant value = m_flowcontrolCombo.currentValue();
+        if ( value.isValid() && value.canConvert< int >() )
+        {
+            return static_cast< serial_cpp::flowcontrol_t >( value.toInt() );
+        }
+        return serial_cpp::flowcontrol_none;
     }
 
 } // namespace psu::mmi
