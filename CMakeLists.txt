@@ -30,7 +30,10 @@ qt_add_qml_module(appLabPowerSupplyGUI
         qml/AppMenuBar.qml
         qml/AppTabBar.qml
         qml/AppToolBar.qml
+        qml/BatteryChargerTab.qml
         qml/ConnectingTab.qml
+        qml/CsvTab.qml
+        qml/FreeSerialTab.qml
         qml/LabelComboBox.qml
         qml/LedIndicator.qml
         qml/Main.qml

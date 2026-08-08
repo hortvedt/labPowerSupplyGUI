@@ -10,7 +10,7 @@ namespace
         a_comboBox.addItem( "7", serial_cpp::bytesize_t::sevenbits );
         a_comboBox.addItem( "8", serial_cpp::bytesize_t::eightbits );
 
-        a_comboBox.setCurrentIndex( 3 );
+        a_comboBox.setCurrentIndex( 3 ); // Debug Petter: This does not work
     }
 
     void populateParity( psu::mmi::ComboBoxModel &a_comboBox )
@@ -57,28 +57,35 @@ namespace psu::mmi
     }
 
     void ConnectionController::setSerial( const std::string &a_port,
+                                          serial_cpp::Timeout &a_timeOut,
                                           unsigned int a_baudrate,
                                           second a_serialWaitTime,
-                                          serial_cpp::Timeout a_timeOut,
                                           serial_cpp::bytesize_t a_bytesize,
                                           serial_cpp::parity_t a_parity,
                                           serial_cpp::stopbits_t a_stopbits,
                                           serial_cpp::flowcontrol_t a_flowcontrol )
     {
-        if ( m_serial != nullptr )
-        {
-            delete m_serial;
-        }
+        m_serial.setPort( a_port );
+        m_serial.setBaudrate( a_baudrate );
+        m_serial.setTimeout( a_timeOut );
+        m_serial.setBytesize( a_bytesize );
+        m_serial.setParity( a_parity );
+        m_serial.setStopbits( a_stopbits );
+        m_serial.setFlowcontrol( a_flowcontrol );
 
-        m_serial = new serial_cpp::Serial( a_port,
-                                           a_baudrate,
-                                           a_timeOut,
-                                           a_bytesize,
-                                           a_parity,
-                                           a_stopbits,
-                                           a_flowcontrol );
+        m_psu->setSerial( &m_serial, a_serialWaitTime );
+    }
 
-        m_psu->setSerial( m_serial, a_serialWaitTime );
+    void ConnectionController::setSerial()
+    {
+        setSerial( m_port,
+                   m_timeOut,
+                   m_baudrate,
+                   m_serialWaitTime,
+                   m_bytesize,
+                   m_parity,
+                   m_stopbits,
+                   m_flowcontrol );
     }
 
     void ConnectionController::updateSerialSettings()
@@ -92,6 +99,9 @@ namespace psu::mmi
         m_parity = parity;
         m_stopbits = stopbits;
         m_flowcontrol = flowcontrol;
+
+        m_port = m_qStringPort.toStdString();
+        m_timeOut = serial_cpp::Timeout::simpleTimeout( m_timeOutTime );
     }
 
     auto ConnectionController::connectToPsu() -> bool
@@ -105,9 +115,13 @@ namespace psu::mmi
         return not identification.empty();
     }
 
-    auto ConnectionController::connectedToPsu() -> bool
+    void ConnectionController::connectToSerial()
     {
-        return m_connectedToPsu;
+        updateSerialSettings();
+        setSerial();
+
+        m_connectedToSerial = true;
+        emit connectedToSerialChanged();
     }
 
     auto ConnectionController::bytesizeCombo() -> ComboBoxModel *
@@ -168,6 +182,16 @@ namespace psu::mmi
             return static_cast< serial_cpp::flowcontrol_t >( value.toInt() );
         }
         return serial_cpp::flowcontrol_none;
+    }
+
+    auto ConnectionController::connectedToSerial() -> bool
+    {
+        return m_connectedToSerial;
+    }
+
+    auto ConnectionController::connectedToPsu() -> bool
+    {
+        return m_connectedToPsu;
     }
 
 } // namespace psu::mmi

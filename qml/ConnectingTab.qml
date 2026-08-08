@@ -23,6 +23,10 @@ Item {
                 TextField {
                     Layout.preferredWidth: root.boxWidth
                     placeholderText: "Enter port ( /dev/ttyUSB0 )"
+
+                    onTextEdited: {
+                        SingletonClass.connectionController.port = text
+                    }
                 }
             }
 
@@ -41,12 +45,14 @@ Item {
                     stepSize: 100
                     value: 9600
 
-                    // onValueChanged: baudrate = value
-
                     contentItem: Text {
                         text: baudrateBox.value
                         horizontalAlignment: Text.AlignLeft
-                        color: parent.palette.text
+                        // color: parent.palette.text
+                    }
+
+                    onValueModified: {
+                        SingletonClass.connectionController.baudrate = value
                     }
                 }
             }
@@ -64,12 +70,16 @@ Item {
                     from: 0
                     to: 1000
                     stepSize: 50
-                    value: 0
+                    value: 100
 
                     contentItem: Text {
                         text: timeoutBox.value
                         horizontalAlignment: Text.AlignLeft
-                        color: parent.palette.text
+                        // color: parent.palette.text
+                    }
+
+                    onValueModified: {
+                        SingletonClass.connectionController.timeOutTime = value
                     }
                 }
             }
@@ -103,11 +113,25 @@ Item {
             }
         }
 
-        Button {
-            text: "Connect"
+        ColumnLayout {
+            Button {
+                text: "Connect to serial"
+                enabled: true
 
-            onClicked: {
-                console.log("Clicked")
+                onClicked: {
+                    console.log("Connecting serial")
+                    SingletonClass.connectionController.connectToSerial()
+                }
+            }
+
+            Button {
+                text: "Connect to psu"
+                enabled: SingletonClass.connectionController.connectedToSerial
+
+                onClicked: {
+                    console.log("Connecting psu")
+                    SingletonClass.connectionController.connectToPsu()
+                }
             }
         }
     }

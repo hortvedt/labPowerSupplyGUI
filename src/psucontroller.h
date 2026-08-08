@@ -17,31 +17,38 @@ namespace psu::mmi
         QML_ELEMENT
         QML_UNCREATABLE( "" )
 
-        Q_PROPERTY( psu::volt voltage READ voltage NOTIFY voltageChanged );
-        Q_PROPERTY( psu::volt current READ current NOTIFY currentChanged );
+        Q_PROPERTY( QString voltage READ voltageString NOTIFY voltageChanged );
+        Q_PROPERTY( QString current READ currentString NOTIFY currentChanged );
         Q_PROPERTY( bool serialOpen READ serialOpen NOTIFY serialOpenChanged );
         Q_PROPERTY( bool currentLimited READ currentLimited NOTIFY currentLimitedChanged );
         Q_PROPERTY( bool voltageLimited READ voltageLimited NOTIFY voltageLimitedChanged );
         Q_PROPERTY( bool outputOn READ outputOn NOTIFY outputOnChanged );
-        Q_PROPERTY( psu::volt setVoltage READ setVoltage NOTIFY setVoltageChanged );
-        Q_PROPERTY( psu::ampere setCurrent READ setCurrent NOTIFY setCurrentChanged );
+        Q_PROPERTY( QString valueSetVoltage READ valueOfSetVoltageString NOTIFY setVoltageChanged );
+        Q_PROPERTY( QString valueSetCurrent READ valueOfSetCurrentString NOTIFY setCurrentChanged );
         Q_PROPERTY( QString identification READ identification NOTIFY identificationChanged );
+
+        Q_PROPERTY( bool tempDifferentFromSetVoltage READ tempDifferentFromSetVoltage NOTIFY
+                        tempDifferentFromSetVoltageChanged );
+        Q_PROPERTY( bool tempDifferentFromSetCurrent READ tempDifferentFromSetCurrent NOTIFY
+                        tempDifferentFromSetCurrentChanged );
 
     public:
         explicit PsuController( Psu* a_psu, QObject* a_parent = nullptr );
 
         //Methods
         auto voltage() -> volt;
+        auto voltageString() -> QString;
         auto current() -> ampere;
+        auto currentString() -> QString;
         auto serialOpen() -> bool;
         auto currentLimited() -> bool;
         auto voltageLimited() -> bool;
         auto outputOn() -> bool;
-        auto setVoltage() -> volt;
-        auto setCurrent() -> ampere;
-        auto identification() -> QString;
-
-        // void createNewPsu();
+        auto valueOfSetVoltage() -> volt;
+        auto valueOfSetVoltageString() -> QString;
+        auto valueOfSetCurrent() -> ampere;
+        auto valueOfSetCurrentString() -> QString;
+        auto identification() -> QString;        
 
         auto connectedToPsu() -> bool;
 
@@ -49,8 +56,17 @@ namespace psu::mmi
         void updateSetState();
         void updateIdentification();
 
-        // void setPsu( Psu* a_psu );
         auto isSerialSet() -> bool;
+
+        auto tempDifferentFromSetVoltage() -> bool;
+        auto tempDifferentFromSetCurrent() -> bool;
+
+    public slots:
+        void setVoltage( volt a_voltage );
+        void setCurrent( ampere a_current );
+
+        void setTempVoltage( volt a_voltage );
+        void setTempCurrent( volt a_current );
 
     signals:
         void voltageChanged();
@@ -64,6 +80,9 @@ namespace psu::mmi
         void setVoltageChanged();
         void setCurrentChanged();
         void identificationChanged();
+
+        void tempDifferentFromSetVoltageChanged();
+        void tempDifferentFromSetCurrentChanged();
 
     private:
         // Methods
@@ -83,15 +102,21 @@ namespace psu::mmi
         bool m_serialSet = false;
         bool m_allValuesReset = true;
 
+        // volt m_tempValueSetVoltage;
+        // ampere m_tempValueSetCurrent;
+
+        bool m_tempDifferentFromSetVoltage;
+        bool m_tempDifferentFromSetCurrent;
+
         // Setup
-        std::string m_port;
-        unsigned int m_baudrate;
-        second m_serialWaitTime; // Not sure this is nedded any longer.
-        serial_cpp::Timeout m_timeOut;
-        serial_cpp::bytesize_t m_bytesize;
-        serial_cpp::parity_t m_parity;
-        serial_cpp::stopbits_t m_stopbits;
-        serial_cpp::flowcontrol_t m_flowcontrol;
+        // std::string m_port;
+        // unsigned int m_baudrate;
+        // second m_serialWaitTime; // Not sure this is nedded any longer.
+        // serial_cpp::Timeout m_timeOut;
+        // serial_cpp::bytesize_t m_bytesize;
+        // serial_cpp::parity_t m_parity;
+        // serial_cpp::stopbits_t m_stopbits;
+        // serial_cpp::flowcontrol_t m_flowcontrol;
 
         Psu* m_psu;
 
@@ -105,6 +130,8 @@ namespace psu::mmi
         volt m_setVoltage;
         ampere m_setCurrent;
         QString m_identification;
+
+        double m_epsilon { 0.0001 };
     };
 
 } // namespace psu

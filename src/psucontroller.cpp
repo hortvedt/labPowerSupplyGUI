@@ -1,5 +1,7 @@
 #include <psucontroller.h>
 
+#include <utils.h>
+
 namespace psu::mmi
 {
 
@@ -14,9 +16,19 @@ namespace psu::mmi
         return m_voltage;
     }
 
+    auto PsuController::voltageString() -> QString
+    {
+        return QString::fromStdString( utils::voltageToFixedWidthString( m_voltage ) );
+    }
+
     auto PsuController::current() -> ampere
     {
         return m_current;
+    }
+
+    auto PsuController::currentString() -> QString
+    {
+        return QString::fromStdString( utils::currentToFixedWidthString( m_current ) );
     }
 
     auto PsuController::serialOpen() -> bool
@@ -39,14 +51,24 @@ namespace psu::mmi
         return m_outputOn;
     }
 
-    auto PsuController::setVoltage() -> volt
+    auto PsuController::valueOfSetVoltage() -> volt
     {
         return m_setVoltage;
     }
 
-    auto PsuController::setCurrent() -> ampere
+    auto PsuController::valueOfSetVoltageString() -> QString
+    {
+        return QString::fromStdString( utils::voltageToFixedWidthString( m_setVoltage ) );
+    }
+
+    auto PsuController::valueOfSetCurrent() -> ampere
     {
         return m_setCurrent;
+    }
+
+    auto PsuController::valueOfSetCurrentString() -> QString
+    {
+        return QString::fromStdString( utils::currentToFixedWidthString( m_setCurrent ) );
     }
 
     auto PsuController::identification() -> QString
@@ -96,6 +118,46 @@ namespace psu::mmi
     {
         m_serialSet = m_psu->isSerialSet();
         return m_serialSet;
+    }
+
+    auto PsuController::tempDifferentFromSetVoltage() -> bool
+    {
+        return m_tempDifferentFromSetVoltage;
+    }
+
+    auto PsuController::tempDifferentFromSetCurrent() -> bool
+    {
+        return m_tempDifferentFromSetCurrent;
+    }
+
+    void PsuController::setTempVoltage( volt a_voltage )
+    {
+        bool valueDifferent = std::abs( m_setVoltage - a_voltage ) < m_epsilon;
+        if ( valueDifferent != m_tempDifferentFromSetVoltage )
+        {
+            m_tempDifferentFromSetVoltage = valueDifferent;
+            emit tempDifferentFromSetVoltageChanged();
+        }
+    }
+
+    void PsuController::setTempCurrent( volt a_current )
+    {
+        bool valueDifferent = std::abs( m_setCurrent - a_current ) < m_epsilon;
+        if ( valueDifferent != m_tempDifferentFromSetCurrent )
+        {
+            m_tempDifferentFromSetCurrent = valueDifferent;
+            emit tempDifferentFromSetCurrentChanged();
+        }
+    }
+
+    void PsuController::setVoltage( volt a_voltage )
+    {
+        m_psu->setVoltage( a_voltage );
+    }
+
+    void PsuController::setCurrent( ampere a_current )
+    {
+        m_psu->setCurrent( a_current );
     }
 
     // void PsuController::setPsu( Psu *a_psu )

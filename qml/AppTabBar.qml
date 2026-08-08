@@ -3,39 +3,54 @@ import QtQuick.Controls
 
 import labPowerSupplyGUI
 
-TabBar{
-        TabButton {
-            text: "Connect"
-            onClicked: {
-                SingletonClass.applicationController.tab = ApplicationController.Tab.Connect
-            }
-        }
+TabBar {
+    TabButton {
+        text: "Connect"
+        enabled: true
+        checked: SingletonClass.applicationController.tab === ApplicationController.Tab.Connect
 
-        TabButton {
-            text: "Standard"
-            onClicked: {
-                SingletonClass.applicationController.tab = ApplicationController.Tab.Standard
-            }
+        onClicked: {
+            SingletonClass.applicationController.tab = ApplicationController.Tab.Connect
         }
+    }
 
-        TabButton {
-            text: "CSV"
-            onClicked: {
-                SingletonClass.applicationController.tab = ApplicationController.Tab.CSV
-            }
-        }
+    TabButton {
+        text: "Standard"
+        // enabled: SingletonClass.connectionController.connectedToPsu
+        checked: SingletonClass.applicationController.tab === ApplicationController.Tab.Standard
 
-        TabButton {
-            text: "Battery charger"
-            onClicked: {
-                SingletonClass.applicationController.tab = ApplicationController.Tab.BatteryCharger
-            }
+        onClicked: {
+            SingletonClass.applicationController.tab = ApplicationController.Tab.Standard
         }
+    }
 
-        TabButton {
-            text: "Free serial"
-            onClicked: {
-                SingletonClass.applicationController.tab = ApplicationController.Tab.FreeSerial
-            }
+    TabButton {
+        text: "CSV"
+        enabled: SingletonClass.connectionController.connectedToPsu
+        checked: SingletonClass.applicationController.tab === ApplicationController.Tab.CSV
+
+        onClicked: {
+            SingletonClass.applicationController.tab = ApplicationController.Tab.CSV
         }
+    }
+
+    TabButton {
+        text: "Battery charger"
+        enabled: SingletonClass.connectionController.connectedToPsu
+        checked: SingletonClass.applicationController.tab === ApplicationController.Tab.BatteryCharger
+
+        onClicked: {
+            SingletonClass.applicationController.tab = ApplicationController.Tab.BatteryCharger
+        }
+    }
+
+    TabButton {
+        text: "Free serial"
+        enabled: SingletonClass.connectionController.connectedToSerial
+        checked: SingletonClass.applicationController.tab === ApplicationController.Tab.FreeSerial
+
+        onClicked: {
+            SingletonClass.applicationController.tab = ApplicationController.Tab.FreeSerial
+        }
+    }
 }

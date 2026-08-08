@@ -23,11 +23,11 @@ ApplicationWindow {
         }
         StandardTab {
         }
-        StandardTab {
+        CsvTab {
         }
-        StandardTab {
+        BatteryChargerTab {
         }
-        StandardTab {
+        FreeSerialTab {
         }
     }
 }
