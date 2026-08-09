@@ -1,5 +1,6 @@
 #include <psucontroller.h>
 
+#include <qdebug.h>
 #include <utils.h>
 
 namespace psu::mmi
@@ -132,7 +133,7 @@ namespace psu::mmi
 
     void PsuController::setTempVoltage( volt a_voltage )
     {
-        bool valueDifferent = std::abs( m_setVoltage - a_voltage ) < m_epsilon;
+        bool valueDifferent = std::abs( m_setVoltage - a_voltage ) > m_epsilon;
         if ( valueDifferent != m_tempDifferentFromSetVoltage )
         {
             m_tempDifferentFromSetVoltage = valueDifferent;
@@ -142,7 +143,7 @@ namespace psu::mmi
 
     void PsuController::setTempCurrent( volt a_current )
     {
-        bool valueDifferent = std::abs( m_setCurrent - a_current ) < m_epsilon;
+        bool valueDifferent = std::abs( m_setCurrent - a_current ) > m_epsilon;
         if ( valueDifferent != m_tempDifferentFromSetCurrent )
         {
             m_tempDifferentFromSetCurrent = valueDifferent;

@@ -121,14 +121,14 @@ namespace psu::mmi
         Psu* m_psu;
 
         // Statuses
-        volt m_voltage;
-        ampere m_current;
-        bool m_serialOpen;
-        bool m_currentLimited;
-        bool m_voltageLimited;
-        bool m_outputOn;
-        volt m_setVoltage;
-        ampere m_setCurrent;
+        volt m_voltage { 0 };
+        ampere m_current { 0 };
+        bool m_serialOpen { false };
+        bool m_currentLimited { false };
+        bool m_voltageLimited { false };
+        bool m_outputOn { false };
+        volt m_setVoltage { 0 };
+        ampere m_setCurrent { 0 };
         QString m_identification;
 
         double m_epsilon { 0.0001 };

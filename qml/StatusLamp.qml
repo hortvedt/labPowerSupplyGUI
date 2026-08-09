@@ -4,20 +4,21 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Item {
+RowLayout {
     id: root
+
     required property string text
     required property bool state
 
-    RowLayout {
-        spacing: 10
+    spacing: 10
 
-        Label {
-            text: root.text
-        }
+    Label {
+        text: root.text
+    }
 
-        LedIndicator {
-            active: root.state
-        }
+    LedIndicator {
+        active: root.state
+        Layout.preferredWidth: implicitWidth
+        Layout.preferredHeight: implicitHeight
     }
 }

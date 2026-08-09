@@ -13,6 +13,8 @@ Item {
     property int valueWidth: 200
 
     ColumnLayout {
+        // anchors.fill: parent
+
         StatusLamp {
             text: "Output on"
             state: SingletonClass.psuController.outputOn
@@ -58,6 +60,11 @@ Item {
                 text: "Set voltage"
             }
 
+            Label {
+                Layout.preferredWidth: root.labelWidth
+                text: SingletonClass.psuController.valueSetVoltage
+            }
+
             SpinBox {
                 id: setVoltage
 
@@ -70,7 +77,7 @@ Item {
                 contentItem: Text {
                     text: setVoltage.value
                     horizontalAlignment: Text.AlignLeft
-                    // color: parent.palette.text
+                    color: parent.palette.text
                 }
 
                 onValueModified: {
@@ -95,6 +102,11 @@ Item {
                 text: "Set current"
             }
 
+            Label {
+                Layout.preferredWidth: root.labelWidth
+                text: SingletonClass.psuController.valueSetCurrent
+            }
+
             SpinBox {
                 id: setCurrent
 
@@ -105,7 +117,7 @@ Item {
                 value: 0
 
                 contentItem: Text {
-                    text: setVoltage.value
+                    text: setCurrent.value
                     horizontalAlignment: Text.AlignLeft
                     color: parent.palette.text
                 }

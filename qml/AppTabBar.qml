@@ -26,7 +26,7 @@ TabBar {
 
     TabButton {
         text: "CSV"
-        enabled: SingletonClass.connectionController.connectedToPsu
+        // enabled: SingletonClass.connectionController.connectedToPsu
         checked: SingletonClass.applicationController.tab === ApplicationController.Tab.CSV
 
         onClicked: {

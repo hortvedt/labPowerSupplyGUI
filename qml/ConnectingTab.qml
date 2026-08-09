@@ -48,7 +48,7 @@ Item {
                     contentItem: Text {
                         text: baudrateBox.value
                         horizontalAlignment: Text.AlignLeft
-                        // color: parent.palette.text
+                        color: parent.palette.text
                     }
 
                     onValueModified: {
@@ -63,7 +63,7 @@ Item {
                     text: "Timeout"
                 }
 
-                SpinBox { // Use simpleTimeout
+                SpinBox {
                     id: timeoutBox
 
                     Layout.preferredWidth: root.boxWidth
@@ -75,7 +75,7 @@ Item {
                     contentItem: Text {
                         text: timeoutBox.value
                         horizontalAlignment: Text.AlignLeft
-                        // color: parent.palette.text
+                        color: parent.palette.text
                     }
 
                     onValueModified: {

@@ -10,7 +10,8 @@ namespace
         a_comboBox.addItem( "7", serial_cpp::bytesize_t::sevenbits );
         a_comboBox.addItem( "8", serial_cpp::bytesize_t::eightbits );
 
-        a_comboBox.setCurrentIndex( 3 ); // Debug Petter: This does not work
+        a_comboBox.setCurrentIndex(
+            3 ); // Debug Petter: This does not work. Setting defaults is not working. Maybe use some qt index magic.
     }
 
     void populateParity( psu::mmi::ComboBoxModel &a_comboBox )
