@@ -85,6 +85,7 @@ Item {
                 to: 30
                 stepSize: 1
                 value: 0
+                editable: true
 
                 contentItem: Text {
                     text: setVoltage.value
@@ -127,6 +128,7 @@ Item {
                 to: 5
                 stepSize: 1
                 value: 0
+                editable: true
 
                 contentItem: Text {
                     text: setCurrent.value

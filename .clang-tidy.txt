@@ -1,0 +1,1 @@
+-*,boost-*,bugprone-*,clang-*,concurrency-*,cppcoreguidelines-*,misc-*,modernize-*,performance-*,readability-*

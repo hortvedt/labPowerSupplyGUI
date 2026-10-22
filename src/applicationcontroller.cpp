@@ -1,5 +1,9 @@
 #include <applicationcontroller.h>
 
+#include <QObject>
+#include <psu.h>
+#include <qtmetamacros.h>
+
 namespace psu::mmi
 {
     ApplicationController::ApplicationController( Psu *a_psu, QObject *parent )
@@ -21,7 +25,7 @@ namespace psu::mmi
         emit tabChanged();
     }
 
-    auto ApplicationController::getTab() -> ApplicationController::Tab const
+    auto ApplicationController::getTab() const -> ApplicationController::Tab
     {
         return m_tab;
     }

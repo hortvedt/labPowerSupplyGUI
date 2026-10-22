@@ -2,13 +2,20 @@
 
 #include <QObject>
 
-#include <QtQml/qqmlregistration.h>
 #include <applicationcontroller.h>
+#include <batterycharger.h>
 #include <bccontroller.h>
 #include <connectioncontroller.h>
 #include <csvcontroller.h>
+#include <memory>
+#include <psu.h>
 #include <psucontroller.h>
 #include <qqmlengine.h>
+#include <qqmlintegration.h>
+#include <qtmetamacros.h>
+#include <serial_cpp/serial.h>
+#include <string>
+#include <unitdefinitions.h>
 
 namespace psu::mmi
 {
@@ -30,12 +37,12 @@ namespace psu::mmi
     public:
         explicit SingletonClass( QObject* parent = nullptr );
 
-        auto create( QQmlEngine* a_qmlEngine ) -> SingletonClass*;
+        static auto create( QQmlEngine* a_qmlEngine ) -> std::unique_ptr< SingletonClass >;
 
         void setSerial( const std::string& a_port, // com
-                        unsigned int a_baudrate = 9600,
-                        second a_serialWaitTime = 0.05, // Hopefully not needed
-                        serial_cpp::Timeout a_timeOut = serial_cpp::Timeout(),
+                        unsigned int a_baudrate = DEFAULT_BAUDRATE,
+                        second a_serialWaitTime = DEFAULT_SERIAL_WAIT_TIME, // Hopefully not needed
+                        const serial_cpp::Timeout& a_timeOut = serial_cpp::Timeout(),
                         serial_cpp::bytesize_t a_bytesize = serial_cpp::eightbits,
                         serial_cpp::parity_t a_parity = serial_cpp::parity_none,
                         serial_cpp::stopbits_t a_stopbits = serial_cpp::stopbits_one,

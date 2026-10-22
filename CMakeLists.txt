@@ -35,6 +35,7 @@ qt_add_qml_module(appLabPowerSupplyGUI
         qml/CsvTab.qml
         qml/FreeSerialTab.qml
         qml/LabelComboBox.qml
+        qml/LabelTextValue.qml
         qml/LedIndicator.qml
         qml/Main.qml
         qml/StandardTab.qml

@@ -44,6 +44,7 @@ Item {
                     to: 921600
                     stepSize: 100
                     value: 9600
+                    editable: true
 
                     contentItem: Text {
                         text: baudrateBox.value
@@ -71,6 +72,7 @@ Item {
                     to: 1000
                     stepSize: 50
                     value: 100
+                    editable: true
 
                     contentItem: Text {
                         text: timeoutBox.value

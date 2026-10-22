@@ -1,5 +1,8 @@
 #include <csvcontroller.h>
 
+#include <QObject>
+#include <psu.h>
+
 namespace psu::mmi
 {
     CsvController::CsvController( Psu* a_psu, QObject* a_parent )

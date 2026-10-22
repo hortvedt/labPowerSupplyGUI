@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <comboboxmodel.h>
 #include <psu.h>
 #include <qqmlintegration.h>
+#include <qtmetamacros.h>
+#include <qtypes.h>
 
 namespace psu::mmi
 {
@@ -17,7 +18,7 @@ namespace psu::mmi
         Q_PROPERTY( Tab tab READ getTab WRITE setTab NOTIFY tabChanged )
 
     public:
-        enum struct Tab
+        enum struct Tab : quint8
         {
             Connect = 0,
             Standard,
@@ -38,7 +39,7 @@ namespace psu::mmi
     private:
         // methods
         void setTab( Tab a_tab );
-        auto getTab() -> Tab const;
+        [[nodiscard]] auto getTab() const -> Tab;
 
         psu::Psu* m_psu { nullptr };
 

@@ -4,13 +4,17 @@
 #include <atomic>
 #include <filesystem>
 #include <map>
+#include <mutex>
 #include <psu.h>
 #include <thread>
 #include <unitdefinitions.h>
-#include <utils.h>
 
 namespace psu
 {
+
+    constexpr second DEFAULT_BASE_TIME_BETWEEN_MEASUREMENTS = 120;
+    constexpr second DEFAULT_WAIT_TIME_FOR_BATTERY_VOLTAGE_MEASUREMENTS = 0.5;
+
     // The python class is more of a cli so some thing will be natural to take out
     class BatteryCharger
     {
@@ -35,18 +39,19 @@ namespace psu
                               ah a_capacity,
                               ampere a_currentMax,
                               ampere a_currentChargeCutOff,
-                              std::map< unsigned int, volt > a_socVoltage,
-                              std::map< unsigned int, ampere > a_socChargeCurrent,
+                              const std::map< unsigned int, volt >& a_socVoltage,
+                              const std::map< unsigned int, ampere >& a_socChargeCurrent,
                               second a_waitTimeForBatteryVoltageMeasurements,
                               second a_baseTimeBetweenMeasurements );
-        auto batteryParamsValid() -> bool;
+        [[nodiscard]] auto batteryParamsValid() const -> bool;
         void turnOffOutput();
         void turnOnOutput();
         // TODO: move these methods to the upper level
         // void setChargeParams( std::filesystem::path a_yamlFile );
         // void setBatteryParams( std::filesystem::path a_yamlFile );
 
-    private: // methods
+    private:
+        // methods
         auto getSetVoltage() -> volt;
         auto getSetCurrent() -> ampere;
         auto batteryVoltagesValid() -> bool;
@@ -55,12 +60,12 @@ namespace psu
 
         void chargingStartup();
         void mainChargeLoop();
-        auto chargeCheck() -> bool;
+        [[nodiscard]] auto chargeCheck() const -> bool;
         void chargingEnding();
 
         void unsafeCharge();
 
-    private: // members
+        // members
         Psu* m_psu;
 
         std::atomic< bool > m_charging { false };
@@ -68,14 +73,14 @@ namespace psu
 
         std::mutex m_mutex;
 
-        volt m_setVoltage;
-        ampere m_setCurrent;
-        volt m_batteryVoltage;
-        volt m_voltage;
-        ampere m_current;
+        volt m_setVoltage { 0 };
+        ampere m_setCurrent { 0 };
+        volt m_batteryVoltage { 0 };
+        volt m_voltage { 0 };
+        ampere m_current { 0 };
 
-        unsigned int m_soc; // State Of Charge
-        second m_waitTimeBetweenMeasurements;
+        unsigned int m_soc { 0 }; // State Of Charge
+        second m_waitTimeBetweenMeasurements { 0 };
         bool m_verbose { true }; // TODO: Add the verbose part
         bool m_batteryParamsSet { false };
 
@@ -87,17 +92,21 @@ namespace psu
         std::filesystem::path m_csvFile; // Dont think i want this functionality here
 
         // Battery params
-        volt m_voltageMax;
-        volt m_voltageMin;
-        volt m_voltageNominal;
-        volt m_voltageChargeCutOff;
-        ah m_capacity; // In use for waitTimeBetweenMeasurements
+        volt m_voltageMax { 0 };
+        volt m_voltageMin { 0 };
+        volt m_voltageNominal { 0 };
+        volt m_voltageChargeCutOff { 0 };
+        ah m_capacity { 0 }; // In use for waitTimeBetweenMeasurements
         // The values in the yaml are in  capacity, but I think I only need those values one layer up.
-        ampere m_currentMax; // A safety to
+        ampere m_currentMax { 0 }; // A safety to
         // ampere m_currentMin; // Is this necessary?
-        ampere m_currentChargeCutOff;
-        second m_waitTimeForBatteryVoltageMeasurements; // New C++ possible value 0.5
-        second m_baseTimeBetweenMeasurements;           // New C++ possible value 120
+        ampere m_currentChargeCutOff { 0 };
+        second m_waitTimeForBatteryVoltageMeasurements {
+            DEFAULT_WAIT_TIME_FOR_BATTERY_VOLTAGE_MEASUREMENTS
+        }; // New C++ possible value 0.5
+        second m_baseTimeBetweenMeasurements {
+            DEFAULT_BASE_TIME_BETWEEN_MEASUREMENTS
+        }; // New C++ possible value 120
 
         std::map< unsigned int, volt > m_socVoltage;
         std::map< unsigned int, ampere > m_socChargeCurrent; // This is in ampere, yaml is in C-rate

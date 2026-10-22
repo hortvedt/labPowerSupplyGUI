@@ -1,14 +1,19 @@
 #include <connectioncontroller.h>
 
+#include <QVariant>
+#include <psu.h>
+#include <serial_cpp/serial.h>
+#include <unitdefinitions.h>
+
 namespace
 {
 
     void populateBytesize( psu::mmi::ComboBoxModel &a_comboBox )
     {
-        a_comboBox.addItem( "5", serial_cpp::bytesize_t::fivebits );
-        a_comboBox.addItem( "6", serial_cpp::bytesize_t::sixbits );
-        a_comboBox.addItem( "7", serial_cpp::bytesize_t::sevenbits );
-        a_comboBox.addItem( "8", serial_cpp::bytesize_t::eightbits );
+        a_comboBox.addItem( QStringLiteral( "5" ), serial_cpp::bytesize_t::fivebits );
+        a_comboBox.addItem( QStringLiteral( "6" ), serial_cpp::bytesize_t::sixbits );
+        a_comboBox.addItem( QStringLiteral( "7" ), serial_cpp::bytesize_t::sevenbits );
+        a_comboBox.addItem( QStringLiteral( "8" ), serial_cpp::bytesize_t::eightbits );
 
         a_comboBox.setCurrentIndex(
             3 ); // Debug Petter: This does not work. Setting defaults is not working. Maybe use some qt index magic.
@@ -16,29 +21,32 @@ namespace
 
     void populateParity( psu::mmi::ComboBoxModel &a_comboBox )
     {
-        a_comboBox.addItem( "None", serial_cpp::parity_t::parity_none );
-        a_comboBox.addItem( "Even", serial_cpp::parity_t::parity_even );
-        a_comboBox.addItem( "Odd", serial_cpp::parity_t::parity_odd );
-        a_comboBox.addItem( "Space", serial_cpp::parity_t::parity_space );
-        a_comboBox.addItem( "Mark", serial_cpp::parity_t::parity_mark );
+        a_comboBox.addItem( QStringLiteral( "None" ), serial_cpp::parity_t::parity_none );
+        a_comboBox.addItem( QStringLiteral( "Even" ), serial_cpp::parity_t::parity_even );
+        a_comboBox.addItem( QStringLiteral( "Odd" ), serial_cpp::parity_t::parity_odd );
+        a_comboBox.addItem( QStringLiteral( "Space" ), serial_cpp::parity_t::parity_space );
+        a_comboBox.addItem( QStringLiteral( "Mark" ), serial_cpp::parity_t::parity_mark );
 
         a_comboBox.setCurrentIndex( 0 );
     }
 
     void populateStopbits( psu::mmi::ComboBoxModel &a_comboBox )
     {
-        a_comboBox.addItem( "1", serial_cpp::stopbits_t::stopbits_one );
-        a_comboBox.addItem( "1.5", serial_cpp::stopbits_t::stopbits_one_point_five );
-        a_comboBox.addItem( "2", serial_cpp::stopbits_t::stopbits_two );
+        a_comboBox.addItem( QStringLiteral( "1" ), serial_cpp::stopbits_t::stopbits_one );
+        a_comboBox.addItem( QStringLiteral( "1.5" ),
+                            serial_cpp::stopbits_t::stopbits_one_point_five );
+        a_comboBox.addItem( QStringLiteral( "2" ), serial_cpp::stopbits_t::stopbits_two );
 
         a_comboBox.setCurrentIndex( 0 );
     }
 
     void populateFlowcontrol( psu::mmi::ComboBoxModel &a_comboBox )
     {
-        a_comboBox.addItem( "None", serial_cpp::flowcontrol_t::flowcontrol_none );
-        a_comboBox.addItem( "Software", serial_cpp::flowcontrol_t::flowcontrol_software );
-        a_comboBox.addItem( "Hardware", serial_cpp::flowcontrol_t::flowcontrol_hardware );
+        a_comboBox.addItem( QStringLiteral( "None" ), serial_cpp::flowcontrol_t::flowcontrol_none );
+        a_comboBox.addItem( QStringLiteral( "Software" ),
+                            serial_cpp::flowcontrol_t::flowcontrol_software );
+        a_comboBox.addItem( QStringLiteral( "Hardware" ),
+                            serial_cpp::flowcontrol_t::flowcontrol_hardware );
 
         a_comboBox.setCurrentIndex( 0 );
     }
@@ -91,10 +99,10 @@ namespace psu::mmi
 
     void ConnectionController::updateSerialSettings()
     {
-        serial_cpp::bytesize_t bytesize = getSelectedBytesize();
-        serial_cpp::parity_t parity = getSelectedParity();
-        serial_cpp::stopbits_t stopbits = getSelectedStopbits();
-        serial_cpp::flowcontrol_t flowcontrol = getSelectedFlowcontrol();
+        const serial_cpp::bytesize_t bytesize = getSelectedBytesize();
+        const serial_cpp::parity_t parity = getSelectedParity();
+        const serial_cpp::stopbits_t stopbits = getSelectedStopbits();
+        const serial_cpp::flowcontrol_t flowcontrol = getSelectedFlowcontrol();
 
         m_bytesize = bytesize;
         m_parity = parity;
@@ -112,7 +120,7 @@ namespace psu::mmi
             m_psu->openSerial();
         }
 
-        std::string &identification = m_psu->getIdentification();
+        const std::string &identification = m_psu->getIdentification();
         return not identification.empty();
     }
 
@@ -147,7 +155,7 @@ namespace psu::mmi
 
     auto ConnectionController::getSelectedBytesize() const -> serial_cpp::bytesize_t
     {
-        QVariant value = m_bytesizeCombo.currentValue();
+        const QVariant value = m_bytesizeCombo.currentValue();
         if ( value.isValid() && value.canConvert< int >() )
         {
             return static_cast< serial_cpp::bytesize_t >( value.toInt() );
@@ -157,7 +165,7 @@ namespace psu::mmi
 
     auto ConnectionController::getSelectedParity() const -> serial_cpp::parity_t
     {
-        QVariant value = m_parityCombo.currentValue();
+        const QVariant value = m_parityCombo.currentValue();
         if ( value.isValid() && value.canConvert< int >() )
         {
             return static_cast< serial_cpp::parity_t >( value.toInt() );
@@ -167,7 +175,7 @@ namespace psu::mmi
 
     auto ConnectionController::getSelectedStopbits() const -> serial_cpp::stopbits_t
     {
-        QVariant value = m_stopbitsCombo.currentValue();
+        const QVariant value = m_stopbitsCombo.currentValue();
         if ( value.isValid() && value.canConvert< int >() )
         {
             return static_cast< serial_cpp::stopbits_t >( value.toInt() );
@@ -177,7 +185,7 @@ namespace psu::mmi
 
     auto ConnectionController::getSelectedFlowcontrol() const -> serial_cpp::flowcontrol_t
     {
-        QVariant value = m_flowcontrolCombo.currentValue();
+        const QVariant value = m_flowcontrolCombo.currentValue();
         if ( value.isValid() && value.canConvert< int >() )
         {
             return static_cast< serial_cpp::flowcontrol_t >( value.toInt() );
@@ -185,12 +193,12 @@ namespace psu::mmi
         return serial_cpp::flowcontrol_none;
     }
 
-    auto ConnectionController::connectedToSerial() -> bool
+    auto ConnectionController::connectedToSerial() const -> bool
     {
         return m_connectedToSerial;
     }
 
-    auto ConnectionController::connectedToPsu() -> bool
+    auto ConnectionController::connectedToPsu() const -> bool
     {
         return m_connectedToPsu;
     }

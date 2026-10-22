@@ -36,7 +36,7 @@ TabBar {
 
     TabButton {
         text: "Battery charger"
-        enabled: SingletonClass.connectionController.connectedToPsu
+        // enabled: SingletonClass.connectionController.connectedToPsu
         checked: SingletonClass.applicationController.tab === ApplicationController.Tab.BatteryCharger
 
         onClicked: {
@@ -46,7 +46,7 @@ TabBar {
 
     TabButton {
         text: "Free serial"
-        enabled: SingletonClass.connectionController.connectedToSerial
+        // enabled: SingletonClass.connectionController.connectedToSerial
         checked: SingletonClass.applicationController.tab === ApplicationController.Tab.FreeSerial
 
         onClicked: {

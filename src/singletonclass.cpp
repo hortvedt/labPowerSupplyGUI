@@ -1,10 +1,24 @@
 #include <singletonclass.h>
 
+#include <QObject>
+#include <applicationcontroller.h>
+#include <batterycharger.h>
+#include <bccontroller.h>
+#include <connectioncontroller.h>
+#include <csvcontroller.h>
+#include <memory>
+#include <psu.h>
+#include <psucontroller.h>
+#include <qqmlengine.h>
+#include <serial_cpp/serial.h>
+#include <string>
+#include <unitdefinitions.h>
+
 namespace psu::mmi
 {
 
-    SingletonClass::SingletonClass( QObject* parent )
-        : QObject { parent }
+    SingletonClass::SingletonClass( QObject* a_parent )
+        : QObject { a_parent }
         , m_psu { new Psu() }
         , m_batteryCharger { new BatteryCharger( m_psu ) }
         , m_psuController { new PsuController( m_psu, this ) }
@@ -16,26 +30,23 @@ namespace psu::mmi
     {
     }
 
-    SingletonClass* SingletonClass::create( QQmlEngine* a_qmlEngine )
+    auto SingletonClass::create( QQmlEngine* a_qmlEngine ) -> std::unique_ptr< SingletonClass >
     {
-        return new SingletonClass( a_qmlEngine );
+        return std::make_unique< SingletonClass >( a_qmlEngine );
     }
 
-    void SingletonClass::setSerial( const std::string &a_port,
+    void SingletonClass::setSerial( const std::string& a_port,
                                     unsigned int a_baudrate,
                                     second a_serialWaitTime,
-                                    serial_cpp::Timeout a_timeOut,
+                                    const serial_cpp::Timeout& a_timeOut,
                                     serial_cpp::bytesize_t a_bytesize,
                                     serial_cpp::parity_t a_parity,
                                     serial_cpp::stopbits_t a_stopbits,
                                     serial_cpp::flowcontrol_t a_flowcontrol )
     {
-        if ( m_serial != nullptr )
-        {
-            delete m_serial;
-        }
+        delete m_serial;
 
-        m_serial = new serial_cpp::Serial( a_port,
+        m_serial = new serial_cpp::Serial( a_port, // Maybe use shared pointer or something
                                            a_baudrate,
                                            a_timeOut,
                                            a_bytesize,

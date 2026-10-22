@@ -4,9 +4,15 @@
 #include <comboboxmodel.h>
 #include <psu.h>
 #include <qqmlintegration.h>
+#include <serial_cpp/serial.h>
+#include <string>
+#include <unitdefinitions.h>
 
 namespace psu::mmi
 {
+
+    constexpr unsigned int DEFAULT_BAUDRATE = 9600;
+    constexpr unsigned int DEFAULT_TIMEOUT_TIME = 100;
 
     class ConnectionController : public QObject
     {
@@ -31,8 +37,8 @@ namespace psu::mmi
 
         void setSerial( const std::string& a_port, // com
                         serial_cpp::Timeout& a_timeOut,
-                        unsigned int a_baudrate = 9600,
-                        second a_serialWaitTime = 0.00, // Hopefully not needed
+                        unsigned int a_baudrate = DEFAULT_BAUDRATE,
+                        second a_serialWaitTime = DEFAULT_SERIAL_WAIT_TIME, // Hopefully not needed
                         serial_cpp::bytesize_t a_bytesize = serial_cpp::eightbits,
                         serial_cpp::parity_t a_parity = serial_cpp::parity_none,
                         serial_cpp::stopbits_t a_stopbits = serial_cpp::stopbits_one,
@@ -63,8 +69,8 @@ namespace psu::mmi
         auto getSelectedStopbits() const -> serial_cpp::stopbits_t;
         auto getSelectedFlowcontrol() const -> serial_cpp::flowcontrol_t;
 
-        auto connectedToSerial() -> bool;
-        auto connectedToPsu() -> bool;
+        [[nodiscard]] auto connectedToSerial() const -> bool;
+        [[nodiscard]] auto connectedToPsu() const -> bool;
 
         // members
         serial_cpp::Serial m_serial;
@@ -77,12 +83,12 @@ namespace psu::mmi
         ComboBoxModel m_parityCombo;
         ComboBoxModel m_stopbitsCombo;
         ComboBoxModel m_flowcontrolCombo;
-        unsigned int m_timeOutTime;
+        unsigned int m_timeOutTime { DEFAULT_TIMEOUT_TIME };
         QString m_qStringPort;
 
         std::string m_port; // com
-        unsigned int m_baudrate { 9600 };
-        second m_serialWaitTime { 0.00 }; // Hopefully not needed, was 0.05
+        unsigned int m_baudrate { DEFAULT_BAUDRATE };
+        second m_serialWaitTime { DEFAULT_SERIAL_WAIT_TIME }; // Hopefully not needed, was 0.05
         serial_cpp::Timeout m_timeOut { serial_cpp::Timeout() };
         serial_cpp::bytesize_t m_bytesize { serial_cpp::eightbits };
         serial_cpp::parity_t m_parity { serial_cpp::parity_none };

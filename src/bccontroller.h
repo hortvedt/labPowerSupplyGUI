@@ -3,8 +3,8 @@
 #include <QObject>
 
 #include <batterycharger.h>
-#include <psu.h>
 #include <qqmlintegration.h>
+#include <qtmetamacros.h>
 #include <unitdefinitions.h>
 
 namespace psu::mmi
@@ -40,16 +40,22 @@ namespace psu::mmi
             auto currentString() -> QString;
             auto batteryVoltageString() -> QString;
             auto chargingOn() -> bool;
-            auto voltageMax() -> unsigned int;
-            auto voltageMin() -> unsigned int;
-            auto currentMax() -> unsigned int;
-            auto currentChargeCutOff() -> unsigned int;
-            auto capacity() -> unsigned int;
+            auto voltageMax() -> volt;
+            auto voltageMin() -> volt;
+            auto currentMax() -> ampere;
+            auto currentChargeCutOff() -> ampere;
+            auto capacity() -> ah;
 
             auto socVoltage() -> QList< unsigned int >;
             auto socChargeCurrent() -> QList< unsigned int >;
 
         signals:
+            void voltageChanged();
+            void currentChanged();
+            void batteryVoltageChanged();
+            void chargingOnChanged();
+            void chargeParamsChanged();
+            void socsChanged();
 
         private:
             BatteryCharger* m_batteryCharger { nullptr };

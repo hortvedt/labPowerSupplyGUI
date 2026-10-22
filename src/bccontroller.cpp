@@ -1,5 +1,11 @@
 #include <bccontroller.h>
 
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <batterycharger.h>
+#include <string>
+#include <unitdefinitions.h>
 #include <utils.h>
 
 namespace psu::mmi
@@ -12,22 +18,22 @@ namespace psu::mmi
 
     auto BcController::voltageString() -> QString
     {
-        volt voltage = m_batteryCharger->readVoltage();
-        std::string voltageString = utils::voltageToFixedWidthString( voltage );
+        const volt voltage = m_batteryCharger->readVoltage();
+        const std::string voltageString = utils::voltageToFixedWidthString( voltage );
         return QString::fromStdString( voltageString );
     }
 
     auto BcController::currentString() -> QString
     {
-        ampere current = m_batteryCharger->readCurrent();
-        std::string currentString = utils::currentToFixedWidthString( current );
+        const ampere current = m_batteryCharger->readCurrent();
+        const std::string currentString = utils::currentToFixedWidthString( current );
         return QString::fromStdString( currentString );
     }
 
     auto BcController::batteryVoltageString() -> QString
     {
-        volt voltage = m_batteryCharger->measureBatteryVoltage();
-        std::string voltageString = utils::voltageToFixedWidthString( voltage );
+        const volt voltage = m_batteryCharger->measureBatteryVoltage();
+        const std::string voltageString = utils::voltageToFixedWidthString( voltage );
         return QString::fromStdString( voltageString );
     }
 
@@ -36,27 +42,27 @@ namespace psu::mmi
         return m_chargingOn;
     }
 
-    auto BcController::voltageMax() -> unsigned int
+    auto BcController::voltageMax() -> volt
     {
         return m_voltageMax;
     }
 
-    auto BcController::voltageMin() -> unsigned int
+    auto BcController::voltageMin() -> volt
     {
         return m_voltageMin;
     }
 
-    auto BcController::currentMax() -> unsigned int
+    auto BcController::currentMax() -> ampere
     {
         return m_currentMax;
     }
 
-    auto BcController::currentChargeCutOff() -> unsigned int
+    auto BcController::currentChargeCutOff() -> ampere
     {
         return m_currentChargeCutOff;
     }
 
-    auto BcController::capacity() -> unsigned int
+    auto BcController::capacity() -> ah
     {
         return m_capacity;
     }

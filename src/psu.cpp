@@ -44,7 +44,7 @@ namespace psu {
         ampere setCurrentBeforeMeasurement { m_setCurrent };
 
         {
-            std::lock_guard< std::mutex > lock( m_mutex );
+            std::scoped_lock< std::mutex > lock( m_mutex );
             setCurrent( a_checkingCurrent );
             setVoltage( a_safeVoltage );
             if ( not outputOnBeforeMeasurement )
@@ -56,9 +56,9 @@ namespace psu {
         std::this_thread::sleep_for( std::chrono::milliseconds(
             static_cast< unsigned int >( a_waitForMeasurement * 1000 ) ) );
 
-        volt batteryVoltage;
+        volt batteryVoltage = 0;
         {
-            std::lock_guard< std::mutex > lock( m_mutex );
+            std::scoped_lock< std::mutex > lock( m_mutex );
             batteryVoltage = voltage();
             if ( not outputOnBeforeMeasurement )
             {
@@ -128,17 +128,17 @@ namespace psu {
         return m_statusString;
     }
 
-    auto Psu::getCurrentLimited() -> bool
+    auto Psu::getCurrentLimited() const -> bool
     {
         return m_currentLimited;
     }
 
-    auto Psu::getVoltageLimited() -> bool
+    auto Psu::getVoltageLimited() const -> bool
     {
         return m_ocp;
     }
 
-    auto Psu::getOutputOn() -> bool
+    auto Psu::getOutputOn() const -> bool
     {
         return m_outputOn;
     }

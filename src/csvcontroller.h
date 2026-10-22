@@ -4,6 +4,7 @@
 
 #include <psu.h>
 #include <qqmlintegration.h>
+#include <qtmetamacros.h>
 
 namespace psu::mmi
 {

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <future>
+#include <mutex>
 #include <serial_cpp/serial.h>
-#include <src/unitdefinitions.h>
+#include <string>
+#include <unitdefinitions.h>
 
 // Implement Queue-Based with Worker Thread
 // Is unsafe, does not check for set serial interface
@@ -21,9 +23,9 @@ namespace psu
     constexpr std::string STATUS = "STATUS?";
     constexpr std::string IDENTIFICATION = "*IDN?";
 
-    using second = double;
-    using volt = double;
-    using ampere = double;
+    constexpr volt DEFAULT_SAFE_VOLTAGE = 5;
+    constexpr second DEFAULT_WAIT_TIME_FOR_MEASUREMENT = 5;
+    constexpr second DEFAULT_SERIAL_WAIT_TIME = 0.05;
 
     class Psu
     {
@@ -40,23 +42,25 @@ namespace psu
         auto getSetVoltage() -> volt;
         auto getSetCurrent() -> ampere;
         auto getStatus() -> std::string&; // should this return or just fetch the new value
-        auto getCurrentLimited() -> bool;
-        auto getVoltageLimited() -> bool;
-        auto getOutputOn() -> bool;
+        [[nodiscard]] auto getCurrentLimited() const -> bool;
+        [[nodiscard]] auto getVoltageLimited() const -> bool;
+        [[nodiscard]] auto getOutputOn() const -> bool;
         auto getIdentification() -> std::string&; // should this return or just fetch the new value
         void updateStatus();
         auto voltage() -> volt;
         auto current() -> ampere;
-        auto measureVoltage( volt a_safeVoltage = 5,
-                             second a_waitForMeasurement = 0.5,
+        auto measureVoltage( volt a_safeVoltage = DEFAULT_SAFE_VOLTAGE,
+                             second a_waitForMeasurement = DEFAULT_WAIT_TIME_FOR_MEASUREMENT,
                              ampere a_checkingCurrent = 0 ) -> std::future< volt >;
 
         void setVerbose( bool a_verbose );
 
-        void setSerial( serial_cpp::Serial* a_serial, second a_serialWaitTime = 0.05 );
-        auto isSerialSet() const -> bool;
+        void setSerial( serial_cpp::Serial* a_serial,
+                        second a_serialWaitTime = DEFAULT_SERIAL_WAIT_TIME );
+        [[nodiscard]] auto isSerialSet() const -> bool;
 
-    private: // methods
+    private:
+        // methods
         // TODO Fint out what can be private
         void sleep( unsigned int a_time ); // Should use a unit
         void writeSerial( const std::string& a_command );
@@ -64,7 +68,7 @@ namespace psu
                                   second a_waitForMeasurement,
                                   ampere a_checkingCurrent ) -> volt;
 
-    private: // members
+        // members
         std::mutex m_mutex;
 
         // Strings

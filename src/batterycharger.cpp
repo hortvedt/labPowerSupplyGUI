@@ -1,8 +1,21 @@
 #include <batterycharger.h>
 
-#include <assert.h>
+#include <cassert>
+#include <chrono>
+#include <exception>
+#include <map>
+#include <mutex>
+#include <psu.h>
+#include <thread>
+#include <unitdefinitions.h>
+#include <utils.h>
 
 // #include <yaml-cpp/yaml.h>
+
+namespace
+{
+    constexpr auto CONVERING_FACTOR_SECONDS_TO_MILLISECONDS = 1000;
+}
 
 namespace psu
 {
@@ -49,7 +62,7 @@ namespace psu
         m_psu->openSerial();
     }
 
-    auto BatteryCharger::chargeCheck() -> bool
+    auto BatteryCharger::chargeCheck() const -> bool
     {
         return ( m_batteryVoltage > m_voltageMin && m_batteryVoltage < m_voltageChargeCutOff
                  && m_current > m_currentChargeCutOff );
@@ -145,12 +158,12 @@ namespace psu
     {
         while ( m_charging && chargeCheck() )
         {
-            std::this_thread::sleep_for( std::chrono::milliseconds(
-                static_cast< unsigned int >( m_waitTimeBetweenMeasurements * 1000 ) ) );
+            std::this_thread::sleep_for( std::chrono::milliseconds( static_cast< unsigned int >(
+                m_waitTimeBetweenMeasurements * CONVERING_FACTOR_SECONDS_TO_MILLISECONDS ) ) );
 
             // Update in a thread-safe way
             {
-                std::lock_guard< std::mutex > lock( m_mutex );
+                const std::scoped_lock< std::mutex > lock( m_mutex );
                 measureAndUpdateChargeMembers();
                 setCurrent( m_socChargeCurrent.at( m_soc ) );
             }
@@ -164,8 +177,8 @@ namespace psu
                                           ah a_capacity,
                                           ampere a_currentMax,
                                           ampere a_currentChargeCutOff,
-                                          std::map< unsigned int, volt > a_socVoltage,
-                                          std::map< unsigned int, ampere > a_socChargeCurrent,
+                                          const std::map< unsigned int, volt >& a_socVoltage,
+                                          const std::map< unsigned int, ampere >& a_socChargeCurrent,
                                           second a_waitTimeForBatteryVoltageMeasurements,
                                           second a_baseTimeBetweenMeasurements )
     {
@@ -186,13 +199,14 @@ namespace psu
         m_batteryParamsSet = true;
     }
 
-    auto BatteryCharger::batteryParamsValid() -> bool
+    auto BatteryCharger::batteryParamsValid() const -> bool
     {
-        bool relations = ( m_voltageMax > m_voltageMin && m_voltageMax >= m_voltageChargeCutOff
-                           && m_currentChargeCutOff <= m_currentMax );
-        bool positive = ( m_voltageMax >= 0 && m_voltageMin >= 0 && m_voltageNominal >= 0
-                          && m_voltageChargeCutOff >= 0 && m_capacity >= 0 && m_currentMax >= 0
-                          && m_currentChargeCutOff >= 0 );
+        const bool relations = ( m_voltageMax > m_voltageMin
+                                 && m_voltageMax >= m_voltageChargeCutOff
+                                 && m_currentChargeCutOff <= m_currentMax );
+        const bool positive = ( m_voltageMax >= 0 && m_voltageMin >= 0 && m_voltageNominal >= 0
+                                && m_voltageChargeCutOff >= 0 && m_capacity >= 0
+                                && m_currentMax >= 0 && m_currentChargeCutOff >= 0 );
         return ( relations && positive );
     }
 
