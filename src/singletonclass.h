@@ -46,6 +46,7 @@ namespace psu::mmi
     private:
         serial_cpp::Serial* m_serial { nullptr };
         psu::Psu* m_psu { nullptr };
+        psu::BatteryCharger* m_batteryCharger { nullptr };
         psu::mmi::PsuController* m_psuController { nullptr };
         psu::mmi::BcController* m_bcController { nullptr };
         psu::mmi::CsvController* m_csvController { nullptr };

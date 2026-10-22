@@ -1,13 +1,14 @@
 #pragma once
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <unitdefinitions.h>
+
 // OS Specific milliSleep
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <map>
 #include <unistd.h>
 #endif
 

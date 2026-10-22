@@ -82,6 +82,10 @@ Item {
                         SingletonClass.connectionController.timeOutTime = value
                     }
                 }
+
+                Label {
+                    text: "ms"
+                }
             }
 
             LabelComboBox {

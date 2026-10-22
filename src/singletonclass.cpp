@@ -6,8 +6,9 @@ namespace psu::mmi
     SingletonClass::SingletonClass( QObject* parent )
         : QObject { parent }
         , m_psu { new Psu() }
+        , m_batteryCharger { new BatteryCharger( m_psu ) }
         , m_psuController { new PsuController( m_psu, this ) }
-        , m_bcController { new BcController( m_psu, this ) }
+        , m_bcController { new BcController( m_batteryCharger, this ) }
         // Maybe take the PsuController instead of the psu directly
         , m_csvController { new CsvController( m_psu, this ) }
         , m_connectionController { new ConnectionController( m_psu, this ) }

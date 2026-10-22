@@ -161,6 +161,19 @@ namespace psu::mmi
         m_psu->setCurrent( a_current );
     }
 
+    void PsuController::setOutput( bool a_on )
+    {
+        if ( m_outputOn && !a_on )
+        {
+            m_psu->turnOutputOff();
+        }
+        else if ( !m_outputOn && a_on )
+        {
+            m_psu->turnOutputOn();
+        }
+        // The other cases mean the state is correct already.
+    }
+
     // void PsuController::setPsu( Psu *a_psu )
     // {
     //     m_psu = a_psu;

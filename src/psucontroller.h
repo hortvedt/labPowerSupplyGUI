@@ -65,6 +65,8 @@ namespace psu::mmi
         void setVoltage( volt a_voltage );
         void setCurrent( ampere a_current );
 
+        void setOutput( bool a_on );
+
         void setTempVoltage( volt a_voltage );
         void setTempCurrent( volt a_current );
 

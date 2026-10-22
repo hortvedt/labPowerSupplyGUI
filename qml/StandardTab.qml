@@ -6,18 +6,30 @@ import QtQuick.Layouts
 
 import labPowerSupplyGUI
 
+// Idea: Do like the physical device and have some memory or programmable settings. E.g. 5V 1A, 12V 5A and 3.3V 0.1A.
+
 Item {
     id: root
 
-    property int labelWidth: 100
+    property int labelWidth: 150
     property int valueWidth: 200
 
     ColumnLayout {
-        // anchors.fill: parent
+        RowLayout {
+            StatusLamp {
+                text: "Output on"
+                state: SingletonClass.psuController.outputOn
+            }
 
-        StatusLamp {
-            text: "Output on"
-            state: SingletonClass.psuController.outputOn
+            Button {
+                text: "Toggle output"
+                enabled: true
+
+                onClicked: {
+                    console.log("Turning", setCurrent.value ? "on" : "off")
+                    SingletonClass.psuController.setOutput(!SingletonClass.psuController.outputOn)
+                }
+            }
         }
 
         RowLayout {
@@ -57,7 +69,7 @@ Item {
         RowLayout {
             Label {
                 Layout.preferredWidth: root.labelWidth
-                text: "Set voltage"
+                text: "Maximum voltage"
             }
 
             Label {
@@ -99,7 +111,7 @@ Item {
         RowLayout {
             Label {
                 Layout.preferredWidth: root.labelWidth
-                text: "Set current"
+                text: "Maximum current"
             }
 
             Label {
@@ -138,13 +150,6 @@ Item {
             }
         }
     }
-
-    //     StatusLamp {
-    //         id: lamp2
-    //         text: "Connected"
-    //         state: SingletonClass.connectionController.connectedToPsu
-    //     }
-    // }
 
     // MouseArea {
     //     anchors.fill: parent

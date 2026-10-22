@@ -18,7 +18,5 @@ RowLayout {
 
     LedIndicator {
         active: root.state
-        Layout.preferredWidth: implicitWidth
-        Layout.preferredHeight: implicitHeight
     }
 }
